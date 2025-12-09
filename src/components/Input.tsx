@@ -1,3 +1,4 @@
+import React from "react";
 import {
   View,
   Text,
@@ -5,21 +6,77 @@ import {
   StyleSheet,
   TextInputProps,
 } from "react-native";
+import MaskInput, { createNumberMask } from "react-native-mask-input";
 
 interface InputProps extends TextInputProps {
   label: string;
   error?: string;
+  precision?: number;
+  type?: "number" | "currency" | "text";
 }
 
-export function Input({ label, error, style, ...props }: InputProps) {
+export function Input({
+  label,
+  error,
+  style,
+  type = "text",
+  precision = 2,
+  ...props
+}: InputProps) {
+  const isMasked = type === "currency" || type === "number";
+
+  const realMask = createNumberMask({
+    delimiter: ".",
+    separator: ",",
+    precision: precision,
+  });
+
+  // Convert raw value (e.g. "1234.56") to visual (e.g. "1.234,56")
+  const getDisplayValue = (val: string | undefined): string => {
+    if (!val) return "";
+    const num = parseFloat(String(val));
+    if (isNaN(num)) return val;
+
+    // Format using pt-BR which uses dot for thousands and comma for decimals
+    return num.toLocaleString("pt-BR", {
+      minimumFractionDigits: precision,
+      maximumFractionDigits: precision,
+    });
+  };
+
+  const handleChangeText = (masked: string, unmasked: string) => {
+    // unmasked is usually just digits (e.g. "123456" for "1.234,56")
+    // We need to convert this to "1234.56"
+    if (!unmasked) {
+      props.onChangeText?.("");
+      return;
+    }
+
+    const rawValue = parseFloat(unmasked) / Math.pow(10, precision);
+    props.onChangeText?.(rawValue.toFixed(precision));
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput
-        style={[styles.input, error && styles.inputError, style]}
-        placeholderTextColor="#94a3b8"
-        {...props}
-      />
+
+      {isMasked ? (
+        <MaskInput
+          style={[styles.input, error && styles.inputError, style]}
+          placeholderTextColor="#94a3b8"
+          mask={realMask}
+          {...props}
+          value={getDisplayValue(props.value)}
+          onChangeText={handleChangeText}
+          keyboardType="numeric"
+        />
+      ) : (
+        <TextInput
+          style={[styles.input, error && styles.inputError, style]}
+          placeholderTextColor="#94a3b8"
+          {...props}
+        />
+      )}
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );

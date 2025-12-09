@@ -9,7 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useStore } from "../../store/useStore";
 import { Input } from "../../components/Input";
 import { InitialInputs, SimulationInput } from "../../types";
@@ -46,17 +46,14 @@ export default function SimulationScreen() {
   }, [id]);
 
   const handleInputChange = (key: keyof SimulationInput, value: string) => {
-    // Replace comma with dot for decimals
-    const validValue = value.replace(",", ".");
-    // Allow empty string to let user delete
-    if (validValue === "") {
-      setInputs((prev) => ({ ...prev, [key]: 0 })); // Or handle as string locally. For sim, keeping simple number parsing.
+    if (value === "") {
+      setInputs((prev) => ({ ...prev, [key]: "" }));
       return;
     }
-    const num = parseFloat(validValue);
-    if (!isNaN(num)) {
-      setInputs((prev) => ({ ...prev, [key]: num }));
-    }
+
+    // Replace comma with dot for decimals (legacy check, mostly unused now)
+    const validValue = Number(value.replace(",", ".")).toFixed(2);
+    setInputs((prev) => ({ ...prev, [key]: validValue }));
   };
 
   // Helper to get string value for input
@@ -112,79 +109,102 @@ export default function SimulationScreen() {
         <Text style={styles.sectionTitle}>Ambiente</Text>
         <View style={styles.row}>
           <Input
+            type="currency"
             label="Temp. Mínima (°C)"
             value={getStr("temperaturaMinima")}
-            onChangeText={(t) => handleInputChange("temperaturaMinima", t)}
+            onChangeText={(t) => {
+              console.log(t);
+              handleInputChange("temperaturaMinima", t);
+            }}
             keyboardType="numeric"
+            precision={1}
             style={styles.halfInput}
           />
           <Input
+            type="currency"
             label="Temp. Máxima (°C)"
             value={getStr("temperaturaMaxima")}
             onChangeText={(t) => handleInputChange("temperaturaMaxima", t)}
             keyboardType="numeric"
+            precision={1}
             style={styles.halfInput}
           />
         </View>
         <View style={styles.row}>
           <Input
+            type="currency"
             label="Precipitação (mm/dia)"
             value={getStr("precipitacao")}
             onChangeText={(t) => handleInputChange("precipitacao", t)}
             keyboardType="numeric"
+            precision={3}
             style={styles.halfInput}
           />
           <Input
+            type="currency"
             label="Umidade Rel. (%)"
             value={getStr("umidadeRelativa")}
             onChangeText={(t) => handleInputChange("umidadeRelativa", t)}
             keyboardType="numeric"
+            precision={1}
             style={styles.halfInput}
           />
         </View>
         <Input
+          type="currency"
           label="Velocidade do Vento (m/s)"
           value={getStr("velocidadeDoVento")}
           onChangeText={(t) => handleInputChange("velocidadeDoVento", t)}
           keyboardType="numeric"
+          precision={1}
         />
 
         <Text style={styles.sectionTitle}>Água e Solo</Text>
         <View style={styles.row}>
           <Input
+            type="currency"
             label="Água Disp. Irrigação (m³/dia)"
             value={getStr("aguaDisponivelParaIrrigacao")}
             onChangeText={(t) =>
               handleInputChange("aguaDisponivelParaIrrigacao", t)
             }
             keyboardType="numeric"
+            precision={0}
             style={styles.halfInput}
           />
           <Input
+            type="currency"
             label="Água Outros Usos (L/mês)"
             value={getStr("aguaDeOutrosUsos")}
             onChangeText={(t) => handleInputChange("aguaDeOutrosUsos", t)}
             keyboardType="numeric"
+            precision={0}
             style={styles.halfInput}
           />
         </View>
         <Input
+          type="currency"
           label="Dose de N (kg N/ha/ano)"
           value={getStr("doseDeN")}
           onChangeText={(t) => handleInputChange("doseDeN", t)}
           keyboardType="numeric"
+          precision={0}
         />
 
         <Text style={styles.sectionTitle}>Propriedade</Text>
         <View style={styles.row}>
           <Input
+            type="currency"
             label="Área (ha)"
             value={getStr("area")}
             onChangeText={(t) => handleInputChange("area", t)}
             keyboardType="numeric"
+            precision={1}
             style={styles.halfInput}
           />
           <Input
+            type="currency"
+            precision={0}
             label="Nº de Piquetes"
             value={getStr("numeroDePiquetes")}
             onChangeText={(t) => handleInputChange("numeroDePiquetes", t)}
@@ -194,17 +214,21 @@ export default function SimulationScreen() {
         </View>
         <View style={styles.row}>
           <Input
+            type="currency"
             label="Desl. Horizontal (m)"
             value={getStr("deslocamentoHorizontal")}
             onChangeText={(t) => handleInputChange("deslocamentoHorizontal", t)}
             keyboardType="numeric"
+            precision={0}
             style={styles.halfInput}
           />
           <Input
+            type="currency"
             label="Desl. Vertical (m)"
             value={getStr("deslocamentoVertical")}
             onChangeText={(t) => handleInputChange("deslocamentoVertical", t)}
             keyboardType="numeric"
+            precision={0}
             style={styles.halfInput}
           />
         </View>
@@ -212,46 +236,57 @@ export default function SimulationScreen() {
         <Text style={styles.sectionTitle}>Rebanho</Text>
         <View style={styles.row}>
           <Input
+            type="currency"
             label="Peso Corporal (kg)"
             value={getStr("pesoCorporal")}
             onChangeText={(t) => handleInputChange("pesoCorporal", t)}
             keyboardType="numeric"
+            precision={0}
             style={styles.halfInput}
           />
           <Input
+            type="currency"
             label="Prod. Leite (L/vaca/dia)"
             value={getStr("producaoDeLeite")}
             onChangeText={(t) => handleInputChange("producaoDeLeite", t)}
             keyboardType="numeric"
+            precision={1}
             style={styles.halfInput}
           />
         </View>
         <View style={styles.row}>
           <Input
+            type="currency"
             label="Gordura (%)"
             value={getStr("teorDeGorduraNoLeite")}
             onChangeText={(t) => handleInputChange("teorDeGorduraNoLeite", t)}
             keyboardType="numeric"
+            precision={1}
             style={styles.halfInput}
           />
           <Input
+            type="currency"
             label="Proteína Bruta (%)"
             value={getStr("teorDePBNoLeite")}
             onChangeText={(t) => handleInputChange("teorDePBNoLeite", t)}
             keyboardType="numeric"
+            precision={1}
             style={styles.halfInput}
           />
         </View>
         <Input
+          type="currency"
           label="Vacas em Lactação (%)"
           value={getStr("vacasEmLactacao")}
           onChangeText={(t) => handleInputChange("vacasEmLactacao", t)}
           keyboardType="numeric"
+          precision={1}
         />
 
         <Text style={styles.sectionTitle}>Econômico</Text>
         <View style={styles.row}>
           <Input
+            type="currency"
             label="Investimento (R$/L)"
             value={getStr("investimentoPorL")}
             onChangeText={(t) => handleInputChange("investimentoPorL", t)}
@@ -259,6 +294,7 @@ export default function SimulationScreen() {
             style={styles.halfInput}
           />
           <Input
+            type="currency"
             label="Renda Familiar (R$/mês)"
             value={getStr("rendaFamiliar")}
             onChangeText={(t) => handleInputChange("rendaFamiliar", t)}
@@ -267,10 +303,12 @@ export default function SimulationScreen() {
           />
         </View>
         <Input
+          type="currency"
           label="Taxa Depreciação (% a.a.)"
           value={getStr("taxaDeDepreciacao")}
           onChangeText={(t) => handleInputChange("taxaDeDepreciacao", t)}
           keyboardType="numeric"
+          precision={3}
         />
 
         <View style={{ height: 20 }} />
