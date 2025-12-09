@@ -32,6 +32,7 @@ interface StoreState {
   ) => void;
   deleteSimulation: (id: string) => void;
   getSimulation: (id: string) => Simulation | undefined;
+  clearSimulations: () => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -67,6 +68,7 @@ export const useStore = create<StoreState>()(
           ),
         }));
       },
+      clearSimulations: () => set({ simulations: [] }),
       deleteSimulation: (id) =>
         set((state) => ({
           simulations: state.simulations.filter((s) => s.id !== id),

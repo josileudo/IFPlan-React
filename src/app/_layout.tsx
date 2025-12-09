@@ -1,8 +1,30 @@
-import { Stack } from "expo-router";
+import { useStore } from "@/store/useStore";
+import { MaterialIcons } from "@expo/vector-icons";
+import { router, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 export default function Layout() {
+  const { clearSimulations } = useStore();
+
+  const handleClearSimulations = () => {
+    Alert.alert(
+      "Exluir tudo",
+      "Tem certeza que deseja excluir todas as simulações?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelado"),
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          onPress: () => clearSimulations(),
+          style: "destructive",
+        },
+      ]
+    );
+  };
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="dark" />
@@ -31,6 +53,13 @@ export default function Layout() {
           options={{
             title: "Minhas Simulações",
             headerLargeTitle: true,
+            headerRight: () => (
+              <TouchableOpacity onPress={handleClearSimulations}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
+                  Limpar tudo
+                </Text>
+              </TouchableOpacity>
+            ),
           }}
         />
         <Stack.Screen

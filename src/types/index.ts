@@ -25,7 +25,6 @@ export interface SimulationInput {
   varPreco: number;
   velocidadeDoVento: number;
 }
-
 export interface SimulationOutput {
   aguaAplicada: number | null;
   capacidadeDeSuporte: number | null;
@@ -76,31 +75,3 @@ export interface Simulation {
   inputs: SimulationInput;
   results: SimulationOutput;
 }
-
-export const InitialInputs: SimulationInput = {
-  aguaDeOutrosUsos: 50000,
-  aguaDisponivelParaIrrigacao: 3000,
-  area: 50,
-  deslocamentoHorizontal: 5000,
-  deslocamentoVertical: 300,
-  doseDeN: 1200,
-  investimentoPorL: 750,
-  numeroDePiquetes: 24,
-  pesoCorporal: 450,
-  precipitacao: 2.027,
-  producaoDeLeite: 18,
-  rendaFamiliar: 5000,
-  taxaDeDepreciacao: 6.667,
-  temperaturaMaxima: 34.3,
-  temperaturaMinima: 21.5,
-  teorDeGorduraNoLeite: 3.8,
-  teorDePBNoLeite: 3.2,
-  umidadeRelativa: 63.6,
-  vacasEmLactacao: 78,
-  varCOE: 1.4,
-  varDPL: 1,
-  varFOR: 1,
-  varMS: 1,
-  varPreco: 1.35,
-  velocidadeDoVento: 3.6,
-};

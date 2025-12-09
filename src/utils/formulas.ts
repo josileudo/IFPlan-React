@@ -137,10 +137,6 @@ export const calculateSimulation = (
       -0.24042 * input.producaoDeLeite +
       0.004937 * pow(input.producaoDeLeite, 2)) *
     input.varCOE;
-  console.log("coe", coe);
-  console.log("producaoDiaria", producaoDiaria);
-  console.log("producaoDeLeite", input.producaoDeLeite);
-  console.log("varCOE", input.varCOE);
 
   // investimentoTotal: Deduced: InvestimentoPorL * Produção Diária (Capacity)
   const investimentoTotal = input.investimentoPorL * producaoDiaria;

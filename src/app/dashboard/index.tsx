@@ -4,6 +4,7 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
@@ -12,8 +13,22 @@ import { Card } from "../../components/Card";
 export default function Dashboard() {
   const router = useRouter();
   const simulations = useStore((state) => state.simulations);
+  const deleteSimulation = useStore((state) => state.deleteSimulation);
 
-  // Re-render when simulations change is automatic with Zustand selector
+  const handleDelete = (id: string) => {
+    Alert.alert("Excluir", "Tem certeza que deseja excluir esta simulação?", [
+      {
+        text: "Cancelar",
+        onPress: () => console.log("Cancelado"),
+        style: "cancel",
+      },
+      {
+        text: "Excluir",
+        onPress: () => deleteSimulation(id),
+        style: "destructive",
+      },
+    ]);
+  };
 
   return (
     <View style={styles.container}>
@@ -23,10 +38,11 @@ export default function Dashboard() {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <Card
-            title={item.name || "Simulação Sem Título"} // Fallback, though we should enforce name
+            title={item.name || "Simulação Sem Título"}
             description={item.description}
             date={item.date}
             onPress={() => router.push(`/result/${item.id}`)}
+            onDelete={() => handleDelete(item.id)}
           />
         )}
         ListEmptyComponent={
