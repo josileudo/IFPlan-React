@@ -1,13 +1,15 @@
 import { useStore } from "@/store/useStore";
+import { exportCsvAndShare } from "@/utils/exportCSV";
 import { MaterialIcons } from "@expo/vector-icons";
-import { router, Stack } from "expo-router";
+import { router, Stack, useGlobalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 export default function Layout() {
-  const { clearSimulations } = useStore();
+  const { clearSimulations, getSimulation } = useStore();
+  const { id } = useGlobalSearchParams();
 
-  const handleClearSimulations = () => {
+  const handleClearSimulations = (id: string) => {
     Alert.alert(
       "Exluir tudo",
       "Tem certeza que deseja excluir todas as simulações?",
@@ -25,6 +27,35 @@ export default function Layout() {
       ]
     );
   };
+
+  const handleExport = async () => {
+    if (typeof id !== "string") return;
+    const simulation = getSimulation(id);
+
+    if (!simulation) {
+      Alert.alert("Erro", "Simulação não encontrada para exportação.");
+      return;
+    }
+
+    const flattened = {
+      id: simulation.id,
+      name: simulation.name,
+      description: simulation.description,
+      date: simulation.date,
+      ...simulation.inputs,
+      ...simulation.results,
+    };
+
+    try {
+      await exportCsvAndShare(
+        [flattened],
+        `simulacao-${simulation.name || "sem-nome"}.csv`
+      );
+    } catch (error) {
+      Alert.alert("Erro", "Falha ao exportar CSV.");
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="dark" />
@@ -54,7 +85,7 @@ export default function Layout() {
             title: "Minhas Simulações",
             headerLargeTitle: true,
             headerRight: () => (
-              <TouchableOpacity onPress={handleClearSimulations}>
+              <TouchableOpacity onPress={() => handleClearSimulations("all")}>
                 <Text style={{ color: "red", fontWeight: "bold" }}>
                   Limpar tudo
                 </Text>
@@ -73,6 +104,11 @@ export default function Layout() {
           name="result/[id]"
           options={{
             title: "Resultados",
+            headerRight: () => (
+              <TouchableOpacity onPress={handleExport}>
+                <MaterialIcons name="share" size={24} color="#059669" />
+              </TouchableOpacity>
+            ),
           }}
         />
       </Stack>
