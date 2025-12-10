@@ -68,7 +68,6 @@ export default function SimulationScreen() {
     const { name, description, ...inputValues } = data;
     const inputs = {} as SimulationInput;
     Object.assign(inputs, inputValues);
-    console.log("*** inputs - onSubmit", inputs);
 
     if (id) {
       updateSimulation(id, inputs);

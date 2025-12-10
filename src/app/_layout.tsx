@@ -3,13 +3,13 @@ import { exportCsvAndShare } from "@/utils/exportCSV";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router, Stack, useGlobalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 
 export default function Layout() {
   const { clearSimulations, getSimulation } = useStore();
   const { id } = useGlobalSearchParams();
 
-  const handleClearSimulations = (id: string) => {
+  const handleClearSimulations = () => {
     Alert.alert(
       "Exluir tudo",
       "Tem certeza que deseja excluir todas as simulações?",
@@ -83,9 +83,9 @@ export default function Layout() {
           name="dashboard/index"
           options={{
             title: "Minhas Simulações",
-            headerLargeTitle: true,
+            headerLargeTitle: Platform.OS !== "ios",
             headerRight: () => (
-              <TouchableOpacity onPress={() => handleClearSimulations("all")}>
+              <TouchableOpacity onPress={handleClearSimulations}>
                 <Text style={{ color: "#DC0000", fontWeight: "bold" }}>
                   Limpar tudo
                 </Text>
