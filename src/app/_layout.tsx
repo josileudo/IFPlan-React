@@ -86,7 +86,7 @@ export default function Layout() {
             headerLargeTitle: true,
             headerRight: () => (
               <TouchableOpacity onPress={() => handleClearSimulations("all")}>
-                <Text style={{ color: "red", fontWeight: "bold" }}>
+                <Text style={{ color: "#DC0000", fontWeight: "bold" }}>
                   Limpar tudo
                 </Text>
               </TouchableOpacity>

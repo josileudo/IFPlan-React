@@ -4,14 +4,14 @@ import { Simulation, SimulationInput, SimulationOutput } from "../types";
 import { calculateSimulation } from "../utils/formulas";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const zustandStorage = {
-//   setItem: (name: string, value: string) => storage.set(name, value),
-//   getItem: (name: string) => {
-//     const value = storage.getString(name);
-//     return value ?? null;
-//   },
-//   removeItem: (name: string) => storage.remove(name),
-// };
+const zustandStorage = {
+  setItem: (name: string, value: string) => AsyncStorage.setItem(name, value),
+  getItem: (name: string) => {
+    const value = AsyncStorage.getItem(name);
+    return value ?? null;
+  },
+  removeItem: (name: string) => AsyncStorage.removeItem(name),
+};
 
 interface StoreState {
   simulations: Simulation[];
@@ -36,6 +36,7 @@ export const useStore = create<StoreState>()(
     (set, get) => ({
       simulations: [],
       addSimulation: (name, description, input) => {
+        console.log("*** store - input", input);
         const results = calculateSimulation(input);
         const newSimulation: Simulation = {
           id: Date.now().toString(),
@@ -73,7 +74,7 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "ifplan-storage",
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => zustandStorage),
     }
   )
 );

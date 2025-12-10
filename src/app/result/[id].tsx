@@ -69,6 +69,7 @@ export default function ResultScreen() {
   const [sliderVisible, setSliderVisible] = useState(false);
 
   useEffect(() => {
+    console.log("*** originalSim", originalSim);
     if (originalSim) {
       setCurrentInputs(originalSim.inputs);
     } else {

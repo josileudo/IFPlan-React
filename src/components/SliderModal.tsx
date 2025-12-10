@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import Slider from "@react-native-community/slider";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { SimulationInput } from "../types";
 
 interface SliderModalProps {
@@ -30,15 +30,27 @@ function SliderItem({
   label,
   value,
   onValueChange,
-  min = 0,
+  min = 1,
   max = 200,
   step = 1,
 }: SliderItemProps) {
+  const negativeAndPositiveValue = useMemo(() => {
+    if (value <= 100) return (value / 100) * 100 - 100;
+    return value - 100;
+  }, [value]);
+
   return (
     <View style={styles.sliderContainer}>
       <View style={styles.labelRow}>
         <Text style={styles.sliderLabel}>{label}</Text>
-        <Text style={styles.sliderValue}>{value.toFixed(0)}%</Text>
+        <Text
+          style={[
+            styles.sliderValue,
+            { color: negativeAndPositiveValue < 0 ? "#DC0000" : "#059669" },
+          ]}
+        >
+          {negativeAndPositiveValue.toFixed(0)}%
+        </Text>
       </View>
       <Slider
         style={{ width: "100%", height: 40 }}
@@ -47,8 +59,7 @@ function SliderItem({
         step={step}
         value={value}
         onValueChange={onValueChange}
-        minimumTrackTintColor="#059669"
-        maximumTrackTintColor="#cbd5e1"
+        maximumTrackTintColor="#059669"
         thumbTintColor="#059669"
       />
     </View>
@@ -61,24 +72,22 @@ export function SliderModal({
   currentInputs,
   onApply,
 }: SliderModalProps) {
-  // Local state for sliders (percentages)
-  // We convert the input "factor" (e.g. 1.4) to percentage (140) for the slider
   const [vars, setVars] = useState({
-    varCOE: 140,
+    varCOE: 100,
     varDPL: 100,
     varFOR: 100,
     varMS: 100,
-    varPreco: 135,
+    varPreco: 100,
   });
 
   useEffect(() => {
     if (visible) {
       setVars({
-        varCOE: (currentInputs.varCOE || 1.4) * 100,
+        varCOE: (currentInputs.varCOE || 1) * 100,
         varDPL: (currentInputs.varDPL || 1) * 100,
         varFOR: (currentInputs.varFOR || 1) * 100,
         varMS: (currentInputs.varMS || 1) * 100,
-        varPreco: (currentInputs.varPreco || 1.35) * 100,
+        varPreco: (currentInputs.varPreco || 1) * 100,
       });
     }
   }, [visible, currentInputs]);
@@ -113,7 +122,7 @@ export function SliderModal({
               label="Var. COE"
               value={vars.varCOE}
               onValueChange={(v) => handleChange("varCOE", v)}
-              max={300}
+              max={200}
             />
             <SliderItem
               label="Var. DPL (Perda Prod.)"
@@ -137,7 +146,7 @@ export function SliderModal({
               label="Var. Preço Leite"
               value={vars.varPreco}
               onValueChange={(v) => handleChange("varPreco", v)}
-              max={300}
+              max={200}
             />
           </ScrollView>
 

@@ -3,6 +3,13 @@ import { SimulationInput, SimulationOutput } from "../types";
 export const calculateSimulation = (
   input: SimulationInput
 ): SimulationOutput => {
+  // Default adjustment variables to 1.0 (neutral/no adjustment)
+  const varFOR = input.varFOR ?? 1.0;
+  const varMS = input.varMS ?? 1.0;
+  const varDPL = input.varDPL ?? 1.0;
+  const varCOE = input.varCOE ?? 1.0;
+  const varPreco = input.varPreco ?? 1.0;
+
   // Helpers
   const _if = (condition: boolean, trueVal: number, falseVal: number) =>
     condition ? trueVal : falseVal;
@@ -53,7 +60,7 @@ export const calculateSimulation = (
     -0.284546 * tensaoDaAguaNoSolo +
     -2.13514 * pow(tensaoDaAguaNoSolo, 2);
   const term2 = (100.31 + 0.1377 * input.doseDeN) / (100.31 + 0.1377 * 1200);
-  const producaoDeForragem = term1 * term2 * input.varFOR;
+  const producaoDeForragem = term1 * term2 * varFOR;
 
   // forragemDisponivel: ((Produção de forragem * 10000) * (Área / Número de piquetes)) * 0,2
   // 10000 conversion implies kg/m2 to kg/ha? Or m2 to ha?
@@ -102,7 +109,7 @@ export const calculateSimulation = (
   const consumoTotal =
     (consumo +
       (consumoDeNDT !== 0 ? (ndtDeslocamento / consumoDeNDT) * consumo : 0)) *
-    input.varMS;
+    varMS;
 
   // suplementacao: Not defined in formulas? Used in Capacidade.
   // Assumption: Standard calculation or 0 if not provided. Input doesn't have it.
@@ -120,7 +127,7 @@ export const calculateSimulation = (
   // Prod per cow adjusted = (Prod - Loss).
   // Total cows = Capacitade * %Lactation.
   const producaoDiaria =
-    (input.producaoDeLeite - dpl * input.varDPL) *
+    (input.producaoDeLeite - dpl * varDPL) *
     (capacidadeDeSuporte * (input.vacasEmLactacao / 100)); // OK
 
   // Derived productions
@@ -136,7 +143,7 @@ export const calculateSimulation = (
       0.00000000767199 * pow(producaoDiaria, 2) +
       -0.24042 * input.producaoDeLeite +
       0.004937 * pow(input.producaoDeLeite, 2)) *
-    input.varCOE;
+    varCOE;
 
   // investimentoTotal: Deduced: InvestimentoPorL * Produção Diária (Capacity)
   const investimentoTotal = input.investimentoPorL * producaoDiaria;
@@ -157,7 +164,7 @@ export const calculateSimulation = (
       (-0.0132 * pow(input.teorDeGorduraNoLeite, 2) +
         0.1384 * input.teorDeGorduraNoLeite -
         0.3089)) *
-    input.varPreco;
+    varPreco;
 
   // ml: Preço do leite - COT
   const ml = precoDoLeite - cot;
@@ -180,7 +187,7 @@ export const calculateSimulation = (
   // Loss in L/cow/day = DPL * VarDPL
   // Total Loss L/day = Loss/cow * (Capacidade * VacasEmLactacao/100)
   // Total Loss R$/year = Loss L/day * 365 * PrecoDoLeite
-  const perCowLoss = dpl * input.varDPL;
+  const perCowLoss = dpl * varDPL;
   const totalCows = capacidadeDeSuporte * (input.vacasEmLactacao / 100);
   const totalLossLDay = perCowLoss * totalCows;
   const perdaDeReceitaComEstresse = totalLossLDay * 365 * precoDoLeite;
@@ -200,9 +207,6 @@ export const calculateSimulation = (
 
   // payback: Anos. InvestimentoTotal / ML Anual
   const payback = mlAnual !== 0 ? investimentoTotal / mlAnual : 0;
-  console.log("payback", payback);
-  console.log("mlAnual", mlAnual);
-  console.log("investimentoTotal", investimentoTotal);
 
   // trci: Taxa de Retorno do Capital Investido (% a.a). ML Anual / Investimento Total * 100
   const trci =
@@ -222,8 +226,8 @@ export const calculateSimulation = (
     consumoTotal,
     cot,
     depreciacao,
-    dpl: dpl * input.varDPL, // Maybe return the adjusted DPL or raw? Keeping consistent with usage.
-    dplAnual: dpl * input.varDPL * 365,
+    dpl: dpl * varDPL, // Maybe return the adjusted DPL or raw? Keeping consistent with usage.
+    dplAnual: dpl * varDPL * 365,
     eto,
     forragemDisponivel,
     investimentoTotal,

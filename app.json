@@ -7,8 +7,8 @@
       "package": "com.jrconsultoria.ifplan",
       "edgeToEdgeEnabled": true,
       "adaptativeIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
-        "backgroundColor": "#fff"
+        "foregroundImage": "./src/assets/ios-icon.png",
+        "backgroundColor": "#ffff"
       },
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
