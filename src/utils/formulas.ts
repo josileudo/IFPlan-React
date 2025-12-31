@@ -3,6 +3,13 @@ import { SimulationInput, SimulationOutput } from "../types";
 export const calculateSimulation = (
   input: SimulationInput
 ): SimulationOutput => {
+  // Default adjustment variables to 1.0 (neutral/no adjustment)
+  const varFOR = input.varFOR ?? 1;
+  const varMS = input.varMS ?? 1;
+  const varDPL = input.varDPL ?? 1;
+  const varCOE = input.varCOE ?? 1;
+  const varPreco = input.varPreco ?? 1;
+
   // Helpers
   const _if = (condition: boolean, trueVal: number, falseVal: number) =>
     condition ? trueVal : falseVal;
@@ -53,7 +60,7 @@ export const calculateSimulation = (
     -0.284546 * tensaoDaAguaNoSolo +
     -2.13514 * pow(tensaoDaAguaNoSolo, 2);
   const term2 = (100.31 + 0.1377 * input.doseDeN) / (100.31 + 0.1377 * 1200);
-  const producaoDeForragem = term1 * term2 * input.varFOR;
+  const producaoDeForragem = term1 * term2 * varFOR;
 
   // forragemDisponivel: ((Produção de forragem * 10000) * (Área / Número de piquetes)) * 0,2
   // 10000 conversion implies kg/m2 to kg/ha? Or m2 to ha?
@@ -102,7 +109,7 @@ export const calculateSimulation = (
   const consumoTotal =
     (consumo +
       (consumoDeNDT !== 0 ? (ndtDeslocamento / consumoDeNDT) * consumo : 0)) *
-    input.varMS;
+    varMS;
 
   // suplementacao: Not defined in formulas? Used in Capacidade.
   // Assumption: Standard calculation or 0 if not provided. Input doesn't have it.
@@ -120,7 +127,7 @@ export const calculateSimulation = (
   // Prod per cow adjusted = (Prod - Loss).
   // Total cows = Capacitade * %Lactation.
   const producaoDiaria =
-    (input.producaoDeLeite - dpl * input.varDPL) *
+    (input.producaoDeLeite - dpl * varDPL) *
     (capacidadeDeSuporte * (input.vacasEmLactacao / 100)); // OK
 
   // Derived productions
@@ -136,11 +143,7 @@ export const calculateSimulation = (
       0.00000000767199 * pow(producaoDiaria, 2) +
       -0.24042 * input.producaoDeLeite +
       0.004937 * pow(input.producaoDeLeite, 2)) *
-    input.varCOE;
-  console.log("coe", coe);
-  console.log("producaoDiaria", producaoDiaria);
-  console.log("producaoDeLeite", input.producaoDeLeite);
-  console.log("varCOE", input.varCOE);
+    varCOE;
 
   // investimentoTotal: Deduced: InvestimentoPorL * Produção Diária (Capacity)
   const investimentoTotal = input.investimentoPorL * producaoDiaria;
@@ -161,7 +164,7 @@ export const calculateSimulation = (
       (-0.0132 * pow(input.teorDeGorduraNoLeite, 2) +
         0.1384 * input.teorDeGorduraNoLeite -
         0.3089)) *
-    input.varPreco;
+    varPreco;
 
   // ml: Preço do leite - COT
   const ml = precoDoLeite - cot;
@@ -184,7 +187,7 @@ export const calculateSimulation = (
   // Loss in L/cow/day = DPL * VarDPL
   // Total Loss L/day = Loss/cow * (Capacidade * VacasEmLactacao/100)
   // Total Loss R$/year = Loss L/day * 365 * PrecoDoLeite
-  const perCowLoss = dpl * input.varDPL;
+  const perCowLoss = dpl * varDPL;
   const totalCows = capacidadeDeSuporte * (input.vacasEmLactacao / 100);
   const totalLossLDay = perCowLoss * totalCows;
   const perdaDeReceitaComEstresse = totalLossLDay * 365 * precoDoLeite;
@@ -204,9 +207,6 @@ export const calculateSimulation = (
 
   // payback: Anos. InvestimentoTotal / ML Anual
   const payback = mlAnual !== 0 ? investimentoTotal / mlAnual : 0;
-  console.log("payback", payback);
-  console.log("mlAnual", mlAnual);
-  console.log("investimentoTotal", investimentoTotal);
 
   // trci: Taxa de Retorno do Capital Investido (% a.a). ML Anual / Investimento Total * 100
   const trci =
@@ -217,44 +217,52 @@ export const calculateSimulation = (
   const taxaDeLotacao = totalCows / input.area;
 
   return {
-    aguaAplicada,
-    capacidadeDeSuporte,
-    coe,
-    coeTotal,
-    consumo,
-    consumoDeNDT,
-    consumoTotal,
-    cot,
-    depreciacao,
-    dpl: dpl * input.varDPL, // Maybe return the adjusted DPL or raw? Keeping consistent with usage.
-    dplAnual: dpl * input.varDPL * 365,
-    eto,
-    forragemDisponivel,
-    investimentoTotal,
-    irrigacao,
-    itu,
-    mdoFamiliar,
-    ml,
-    mlAnual,
-    mlPorArea,
-    ndtDeslocamento,
-    ndtDH,
-    ndtDV,
-    participacaoDaIrrigacaoNaAgua,
-    payback,
-    pegadaHidrica,
-    perdaDeReceitaComEstresse,
-    precoDoLeite,
-    producaoDeForragem,
-    producaoDeLeiteHaAno,
-    producaoDeLeiteHaDia,
-    producaoDiaria,
-    receitaPorArea,
-    receitaTotalAno,
-    receitaTotalMes,
-    suplementacao,
-    taxaDeLotacao,
-    tensaoDaAguaNoSolo,
-    trci,
+    aguaAplicada: !isNaN(aguaAplicada) ? aguaAplicada : 0,
+    capacidadeDeSuporte: !isNaN(capacidadeDeSuporte) ? capacidadeDeSuporte : 0,
+    coe: !isNaN(coe) ? coe : 0,
+    coeTotal: !isNaN(coeTotal) ? coeTotal : 0,
+    consumo: !isNaN(consumo) ? consumo : 0,
+    consumoDeNDT: !isNaN(consumoDeNDT) ? consumoDeNDT : 0,
+    consumoTotal: !isNaN(consumoTotal) ? consumoTotal : 0,
+    cot: !isNaN(cot) ? cot : 0,
+    depreciacao: !isNaN(depreciacao) ? depreciacao : 0,
+    dpl: !isNaN(dpl) ? dpl * varDPL : 0, // Maybe return the adjusted DPL or raw? Keeping consistent with usage.
+    dplAnual: !isNaN(dpl) ? dpl * varDPL * 365 : 0,
+    eto: !isNaN(eto) ? eto : 0,
+    forragemDisponivel: !isNaN(forragemDisponivel) ? forragemDisponivel : 0,
+    investimentoTotal: !isNaN(investimentoTotal) ? investimentoTotal : 0,
+    irrigacao: !isNaN(irrigacao) ? irrigacao : 0,
+    itu: !isNaN(itu) ? itu : 0,
+    mdoFamiliar: !isNaN(mdoFamiliar) ? mdoFamiliar : 0,
+    ml: !isNaN(ml) ? ml : 0,
+    mlAnual: !isNaN(mlAnual) ? mlAnual : 0,
+    mlPorArea: !isNaN(mlPorArea) ? mlPorArea : 0,
+    ndtDeslocamento: !isNaN(ndtDeslocamento) ? ndtDeslocamento : 0,
+    ndtDH: !isNaN(ndtDH) ? ndtDH : 0,
+    ndtDV: !isNaN(ndtDV) ? ndtDV : 0,
+    participacaoDaIrrigacaoNaAgua: !isNaN(participacaoDaIrrigacaoNaAgua)
+      ? participacaoDaIrrigacaoNaAgua
+      : 0,
+    payback: !isNaN(payback) ? payback : 0,
+    pegadaHidrica: !isNaN(pegadaHidrica) ? pegadaHidrica : 0,
+    perdaDeReceitaComEstresse: !isNaN(perdaDeReceitaComEstresse)
+      ? perdaDeReceitaComEstresse
+      : 0,
+    precoDoLeite: !isNaN(precoDoLeite) ? precoDoLeite : 0,
+    producaoDeForragem: !isNaN(producaoDeForragem) ? producaoDeForragem : 0,
+    producaoDeLeiteHaAno: !isNaN(producaoDeLeiteHaAno)
+      ? producaoDeLeiteHaAno
+      : 0,
+    producaoDeLeiteHaDia: !isNaN(producaoDeLeiteHaDia)
+      ? producaoDeLeiteHaDia
+      : 0,
+    producaoDiaria: !isNaN(producaoDiaria) ? producaoDiaria : 0,
+    receitaPorArea: !isNaN(receitaPorArea) ? receitaPorArea : 0,
+    receitaTotalAno: !isNaN(receitaTotalAno) ? receitaTotalAno : 0,
+    receitaTotalMes: !isNaN(receitaTotalMes) ? receitaTotalMes : 0,
+    suplementacao: !isNaN(suplementacao) ? suplementacao : 0,
+    taxaDeLotacao: !isNaN(taxaDeLotacao) ? taxaDeLotacao : 0,
+    tensaoDaAguaNoSolo: !isNaN(tensaoDaAguaNoSolo) ? tensaoDaAguaNoSolo : 0,
+    trci: !isNaN(trci) ? trci : 0,
   };
 };

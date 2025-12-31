@@ -1,3 +1,4 @@
+import { MaterialIcons } from "@expo/vector-icons";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 interface CardProps {
@@ -5,9 +6,16 @@ interface CardProps {
   description?: string;
   date: string;
   onPress: () => void;
+  onDelete: () => void;
 }
 
-export function Card({ title, description, date, onPress }: CardProps) {
+export function Card({
+  title,
+  description,
+  date,
+  onPress,
+  onDelete,
+}: CardProps) {
   const formattedDate = new Date(date).toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "short",
@@ -15,18 +23,25 @@ export function Card({ title, description, date, onPress }: CardProps) {
   });
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.card} activeOpacity={0.7}>
+    <TouchableOpacity onPress={onPress} style={styles.card} activeOpacity={0.8}>
       <View style={styles.header}>
         <Text style={styles.title} numberOfLines={1}>
           {title}
         </Text>
-        <Text style={styles.date}>{formattedDate}</Text>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={onDelete}
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="delete" size={20} color="red" />
+        </TouchableOpacity>
       </View>
-      {description ? (
+      {description && (
         <Text style={styles.description} numberOfLines={2}>
           {description}
         </Text>
-      ) : null}
+      )}
+      <Text style={styles.date}>{formattedDate}</Text>
     </TouchableOpacity>
   );
 }
@@ -67,5 +82,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#64748b",
     lineHeight: 20,
+  },
+  deleteButton: {
+    backgroundColor: "#f5e7e2",
+    padding: 4,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
