@@ -8,9 +8,42 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useState } from "react";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function StartScreen() {
   const router = useRouter();
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setAppIsReady(true);
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+
+    return () => setAppIsReady(false);
+  }, []);
+
+  useEffect(() => {
+    if (appIsReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
+  }
+
   return (
     <ImageBackground
       source={require("../assets/background.png")}
@@ -35,7 +68,7 @@ export default function StartScreen() {
                 <Text style={styles.subtitle}>Leite à Pasto</Text>
               </View>
 
-              <Text style={styles.subtitle}>
+              <Text style={styles.description}>
                 O IFPlan ajuda pequenos produtores de leite a realizarem
                 simulações e análises sobre produtividade, custos e
                 lucratividade baseados em dados reais da propriedade.
@@ -88,6 +121,11 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
   },
   subtitle: {
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "600",
+  },
+  description: {
     fontSize: 14,
     color: "#000000",
     textAlign: "center",
