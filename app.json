@@ -3,22 +3,57 @@
     "name": "IFPlan",
     "slug": "IFPlan",
     "version": "1.0.0",
+    "icon": "./src/assets/icon.png",
+    "splash": {
+      "image": "./src/assets/ios-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#059668"
+    },
     "android": {
       "package": "com.jrconsultoria.ifplan",
       "edgeToEdgeEnabled": true,
-      "adaptativeIcon": {
-        "foregroundImage": "./src/assets/ios-icon.png",
-        "backgroundColor": "#ffff"
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "backgroundColor": "#059668"
       },
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE"
-      ]
+      ],
+      "splash": {
+        "image": "./src/assets/ios-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#059668"
+      }
     },
     "ios": {
       "bundleIdentifier": "com.jrconsultoria.ifplan",
-      "icon": "./src/assets/ios-icon.png"
+      "icon": "./src/assets/ios-icon.png",
+      "splash": {
+        "image": "./src/assets/ios-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#059668"
+      }
     },
-    "plugins": ["expo-router", "expo-asset"]
+    "plugins": [
+      "expo-router",
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#059668",
+          "image": "./src/assets/splash-icon.png",
+          "imageWidth": 200
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ]
+    ]
   }
 }

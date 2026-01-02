@@ -1,16 +1,15 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
 import { Simulation, SimulationInput, SimulationOutput } from "../types";
 import { calculateSimulation } from "../utils/formulas";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MMKV } from "react-native-mmkv";
 
-const zustandStorage = {
-  setItem: (name: string, value: string) => AsyncStorage.setItem(name, value),
-  getItem: (name: string) => {
-    const value = AsyncStorage.getItem(name);
-    return value ?? null;
-  },
-  removeItem: (name: string) => AsyncStorage.removeItem(name),
+const storage = new MMKV();
+
+const zustandStorage: StateStorage = {
+  setItem: (name, value) => storage.set(name, value),
+  getItem: (name) => storage.getString(name) ?? null,
+  removeItem: (name) => storage.delete(name),
 };
 
 interface StoreState {
@@ -36,7 +35,6 @@ export const useStore = create<StoreState>()(
     (set, get) => ({
       simulations: [],
       addSimulation: (name, description, input) => {
-        console.log("*** store - input", input);
         const results = calculateSimulation(input);
         const newSimulation: Simulation = {
           id: Date.now().toString(),

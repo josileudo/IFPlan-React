@@ -24,6 +24,7 @@ export interface SimulationInput {
   varMS: number;
   varPreco: number;
   velocidadeDoVento: number;
+  precoDoLeite: number;
 }
 export interface SimulationOutput {
   aguaAplicada: number | null;
