@@ -30,7 +30,7 @@ export default function StartScreen() {
         <View style={styles.container}>
           <View style={styles.content}>
             <View style={styles.header}>
-              <View>
+              <View style={styles.logoContainer}>
                 <Text style={styles.title}>IFPlan</Text>
                 <Text style={styles.subtitle}>Leite à Pasto</Text>
               </View>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "800",
     color: "#fff",
     letterSpacing: -1,
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     color: "#000000",
     textAlign: "center",
     fontWeight: "600",
-    marginTop: 8,
     lineHeight: 26,
   },
   illustrationContainer: {
@@ -127,6 +126,13 @@ const styles = StyleSheet.create({
   footer: {
     justifyContent: "flex-end",
     width: "100%",
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 24,
+    backgroundColor: "#0a642b2a",
+    padding: 16,
+    borderRadius: 16,
   },
   logo: {
     width: "auto",
