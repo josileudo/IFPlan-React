@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+import { theme } from "@/utils/theme";
 import {
   View,
   Text,
@@ -57,7 +58,7 @@ export const Input = forwardRef<TextInput, InputProps>(
           <MaskInput
             ref={ref as any}
             style={[styles.input, error && styles.inputError, style]}
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={theme.colors.text.placeholder}
             placeholder="0.00"
             mask={realMask}
             {...props}
@@ -69,7 +70,7 @@ export const Input = forwardRef<TextInput, InputProps>(
           <TextInput
             ref={ref}
             style={[styles.input, error && styles.inputError, style]}
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={theme.colors.text.placeholder}
             {...props}
           />
         )}
@@ -81,31 +82,31 @@ export const Input = forwardRef<TextInput, InputProps>(
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginBottom: theme.spacing.md,
     width: "100%",
   },
   label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#334155",
-    marginBottom: 6,
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.semibold as any,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.xs,
   },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: "#1e293b",
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: 12, // Keeping fixed vertical padding for touch target
+    fontSize: theme.typography.sizes.md,
+    color: theme.colors.text.primary,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: theme.colors.error,
   },
   errorText: {
-    color: "#ef4444",
-    fontSize: 12,
-    marginTop: 4,
+    color: theme.colors.error,
+    fontSize: theme.typography.sizes.xs,
+    marginTop: theme.spacing.xs,
   },
 });

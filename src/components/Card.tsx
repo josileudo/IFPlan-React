@@ -1,3 +1,4 @@
+import { theme } from "@/utils/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
@@ -33,7 +34,7 @@ export function Card({
           onPress={onDelete}
           activeOpacity={0.8}
         >
-          <MaterialIcons name="delete" size={20} color="red" />
+          <MaterialIcons name="delete" size={20} color={theme.colors.error} />
         </TouchableOpacity>
       </View>
       {description && (
@@ -48,43 +49,39 @@ export function Card({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.xl,
+    marginBottom: theme.spacing.md,
+    ...theme.shadows.sm,
     borderWidth: 1,
-    borderColor: "#f1f5f9",
+    borderColor: theme.colors.border,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold as any,
+    color: theme.colors.text.primary,
     flex: 1,
-    marginRight: 8,
+    marginRight: theme.spacing.sm,
   },
   date: {
-    fontSize: 12,
-    color: "#94a3b8",
-    fontWeight: "500",
+    fontSize: theme.typography.sizes.xs,
+    color: theme.colors.text.placeholder,
+    fontWeight: theme.typography.weights.medium as any,
   },
   description: {
-    fontSize: 14,
-    color: "#64748b",
+    fontSize: theme.typography.sizes.sm,
+    color: theme.colors.text.secondary,
     lineHeight: 20,
   },
   deleteButton: {
-    backgroundColor: "#f5e7e2",
+    backgroundColor: "#f5e7e2", // keeping this specific pastel color for now or could find a theme equivalent
     padding: 4,
     borderRadius: 50,
     alignItems: "center",
