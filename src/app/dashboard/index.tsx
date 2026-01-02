@@ -33,11 +33,21 @@ export default function Dashboard() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => {
+            router.push("/privacyPolicy");
+          }}
+        >
+          <Text style={styles.headerButtonText}>Política de Privacidade</Text>
+          <MaterialIcons name="arrow-right" size={20} color="#000" />
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={simulations}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
-        ListHeaderComponent={<Text style={styles.title}>Simulações</Text>}
         renderItem={({ item }) => (
           <Card
             title={item.name || "Simulação Sem Título"}
@@ -55,21 +65,6 @@ export default function Dashboard() {
             </Text>
           </View>
         }
-        ListFooterComponent={() => (
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.footerButton}
-              onPress={() => {
-                router.push("/privacyPolicy");
-              }}
-            >
-              <Text style={styles.footerButtonText}>
-                Política de Privacidade
-              </Text>
-              <MaterialIcons name="arrow-right" size={20} color="#059669" />
-            </TouchableOpacity>
-          </View>
-        )}
       />
 
       <View style={styles.fabContainer}>
@@ -96,24 +91,21 @@ const styles = StyleSheet.create({
     color: "#1e293b",
     margin: 8,
   },
-  footer: {
+  header: {
     flexDirection: "row",
-    margin: 8,
+    justifyContent: "center",
   },
-  footerButton: {
+  headerButton: {
     padding: 8,
     borderRadius: 4,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#059669",
   },
-  footerButtonText: {
-    fontSize: 14,
+  headerButtonText: {
+    fontSize: 12,
     fontWeight: "600",
-    color: "#059669",
   },
   listContent: {
     padding: 24,
