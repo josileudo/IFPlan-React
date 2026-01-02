@@ -9,6 +9,7 @@ import {
 import { useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
 import { Card } from "../../components/Card";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export default function Dashboard() {
         data={simulations}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
+        ListHeaderComponent={<Text style={styles.title}>Simulações</Text>}
         renderItem={({ item }) => (
           <Card
             title={item.name || "Simulação Sem Título"}
@@ -53,6 +55,21 @@ export default function Dashboard() {
             </Text>
           </View>
         }
+        ListFooterComponent={() => (
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={styles.footerButton}
+              onPress={() => {
+                router.push("/privacyPolicy");
+              }}
+            >
+              <Text style={styles.footerButtonText}>
+                Política de Privacidade
+              </Text>
+              <MaterialIcons name="arrow-right" size={20} color="#059669" />
+            </TouchableOpacity>
+          </View>
+        )}
       />
 
       <View style={styles.fabContainer}>
@@ -72,6 +89,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F9FAFB",
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1e293b",
+    margin: 8,
+  },
+  footer: {
+    flexDirection: "row",
+    margin: 8,
+  },
+  footerButton: {
+    padding: 8,
+    borderRadius: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#059669",
+  },
+  footerButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#059669",
   },
   listContent: {
     padding: 24,

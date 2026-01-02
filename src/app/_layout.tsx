@@ -6,7 +6,7 @@ import { StatusBar } from "expo-status-bar";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 
 export default function Layout() {
-  const { clearSimulations, getSimulation } = useStore();
+  const { clearSimulations, getSimulation, simulations } = useStore();
   const { id } = useGlobalSearchParams();
 
   const handleClearSimulations = () => {
@@ -84,13 +84,14 @@ export default function Layout() {
           options={{
             title: "Minhas Simulações",
             headerLargeTitle: Platform.OS !== "ios",
-            headerRight: () => (
-              <TouchableOpacity onPress={handleClearSimulations}>
-                <Text style={{ color: "#DC0000", fontWeight: "bold" }}>
-                  Limpar tudo
-                </Text>
-              </TouchableOpacity>
-            ),
+            headerRight: () =>
+              simulations.length > 0 && (
+                <TouchableOpacity onPress={handleClearSimulations}>
+                  <Text style={{ color: "#DC0000", fontWeight: "bold" }}>
+                    Limpar tudo
+                  </Text>
+                </TouchableOpacity>
+              ),
           }}
         />
         <Stack.Screen
@@ -110,6 +111,10 @@ export default function Layout() {
               </TouchableOpacity>
             ),
           }}
+        />
+        <Stack.Screen
+          name="privacyPolicy/index"
+          options={{ title: "Política de Privacidade" }}
         />
       </Stack>
     </View>
