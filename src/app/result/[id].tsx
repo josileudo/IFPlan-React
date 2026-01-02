@@ -14,6 +14,8 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { calculateSimulation } from "../../utils/formulas";
 import { SimulationInput, SimulationOutput } from "../../types";
 import { SliderModal } from "../../components/SliderModal";
+import { MaterialIcons } from "@expo/vector-icons";
+import { theme } from "@/utils/theme";
 
 function ResultRow({
   label,
@@ -50,13 +52,18 @@ function ResultRow({
 function Section({
   title,
   children,
+  icon,
 }: {
   title: string;
   children: React.ReactNode;
+  icon: keyof typeof MaterialIcons.glyphMap;
 }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionHeader}>
+        <MaterialIcons name={icon} size={22} color={theme.colors.primary} />
+        <Text style={styles.sectionTitle}>{title}</Text>
+      </View>
       {children}
     </View>
   );
@@ -130,7 +137,7 @@ export default function ResultScreen() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         {/* MARK: Resumo Produtivo */}
-        <Section title="Resumo Produtivo">
+        <Section title="Resumo Produtivo" icon="bar-chart">
           <ResultRow
             label="Produção Diária"
             value={results.producaoDiaria}
@@ -158,7 +165,7 @@ export default function ResultScreen() {
         </Section>
 
         {/* MARK: Indicadores Financeiros */}
-        <Section title="Indicadores Financeiros">
+        <Section title="Indicadores Financeiros" icon="monetization-on">
           <ResultRow
             label="Margem Líquida"
             value={results.ml}
@@ -206,7 +213,7 @@ export default function ResultScreen() {
         </Section>
 
         {/* MARK: Ambiente e Estresse */}
-        <Section title="Ambiente e Estresse">
+        <Section title="Ambiente e Estresse" icon="eco">
           <ResultRow label="ITU" value={results.itu} digits={1} />
           <ResultRow
             label="Perda Receita (Estresse)"
@@ -263,6 +270,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F9FAFB",
   },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginBottom: 16,
+    gap: 8,
+  },
   content: {
     padding: 24,
     paddingBottom: 100,
@@ -282,10 +296,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#059669",
-    marginBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#f1f5f9",
-    paddingBottom: 8,
   },
   row: {
     flexDirection: "row",

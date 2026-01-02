@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import { theme } from "@/utils/theme";
 import { useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
 import { Card } from "../../components/Card";
@@ -83,32 +84,32 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: theme.colors.background,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
-    margin: 8,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold as any,
+    color: theme.colors.text.primary,
+    margin: theme.spacing.sm,
   },
   header: {
     flexDirection: "row",
     justifyContent: "center",
   },
   headerButton: {
-    padding: 8,
-    borderRadius: 4,
+    padding: theme.spacing.sm,
+    borderRadius: theme.borderRadius.sm,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.surface,
   },
   headerButtonText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: theme.typography.sizes.xs,
+    fontWeight: theme.typography.weights.semibold as any,
   },
   listContent: {
-    padding: 24,
+    padding: theme.spacing.lg,
     paddingBottom: 100,
   },
   emptyState: {
@@ -117,38 +118,34 @@ const styles = StyleSheet.create({
     marginTop: 100,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 8,
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold as any,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.sm,
   },
   emptyText: {
-    fontSize: 16,
-    color: "#64748b",
+    fontSize: theme.typography.sizes.md,
+    color: theme.colors.text.secondary,
     textAlign: "center",
   },
   fabContainer: {
     position: "absolute",
-    bottom: 32,
-    right: 24,
+    bottom: theme.spacing.xl,
+    right: theme.spacing.lg,
   },
   fab: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "#059669",
+    backgroundColor: theme.colors.primary,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#059669",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
+    ...theme.shadows.lg,
   },
   fabText: {
-    color: "#fff",
-    fontSize: 32,
+    color: theme.colors.surface,
+    fontSize: theme.typography.sizes["3xl"],
     marginTop: -4, // visual alignment
-    fontWeight: "400",
+    fontWeight: theme.typography.weights.regular as any,
   },
 });

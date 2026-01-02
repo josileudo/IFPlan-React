@@ -1,3 +1,4 @@
+import { theme } from "@/utils/theme";
 import {
   View,
   Text,
@@ -146,20 +147,16 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.2)",
   },
   button: {
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.surface,
     paddingVertical: 20,
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+    ...theme.shadows.md,
   },
   buttonText: {
-    color: "#059669",
-    fontSize: 18,
-    fontWeight: "700",
+    color: theme.colors.primary,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold as any,
   },
   footer: {
     justifyContent: "flex-end",

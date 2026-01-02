@@ -1,3 +1,4 @@
+import { theme } from "@/utils/theme";
 import { useStore } from "@/store/useStore";
 import { exportCsvAndShare } from "@/utils/exportCSV";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -62,14 +63,14 @@ export default function Layout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: theme.colors.surface,
           },
-          headerTintColor: "#059669",
+          headerTintColor: theme.colors.primary,
           headerTitleStyle: {
             fontWeight: "bold",
           },
           contentStyle: {
-            backgroundColor: "#F9FAFB",
+            backgroundColor: theme.colors.background,
           },
         }}
       >
@@ -107,7 +108,11 @@ export default function Layout() {
             title: "Resultados",
             headerRight: () => (
               <TouchableOpacity onPress={handleExport}>
-                <MaterialIcons name="share" size={24} color="#059669" />
+                <MaterialIcons
+                  name="download"
+                  size={24}
+                  color={theme.colors.primary}
+                />
               </TouchableOpacity>
             ),
           }}
