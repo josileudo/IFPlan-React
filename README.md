@@ -38,6 +38,10 @@ yarn android
 yarn ios
 ```
 
+### link web privacy policy
+
+https://ifplanleite.vercel.app/
+
 ---
 
 <p align="center">Feito por lapis - 2025</p>
