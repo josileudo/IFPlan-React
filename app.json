@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "IFPlan",
-    "slug": "IFPlan",
+    "slug": "ifplan-leite-a-pasto",
     "version": "1.0.0",
     "icon": "./src/assets/icon.png",
     "splash": {
@@ -10,7 +10,7 @@
       "backgroundColor": "#059668"
     },
     "android": {
-      "package": "com.jrconsultoria.ifplan",
+      "package": "com.lapislab.ifplan",
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/ios-icon.png",
@@ -27,12 +27,15 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.jrconsultoria.ifplan",
+      "bundleIdentifier": "com.lapislab.ifplan",
       "icon": "./src/assets/ios-icon.png",
       "splash": {
         "image": "./src/assets/ios-icon.png",
         "resizeMode": "contain",
         "backgroundColor": "#059668"
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "plugins": [
@@ -54,6 +57,13 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "cc691894-9040-42e5-ab95-c1c7a470e770"
+      }
+    },
+    "owner": "lapislabs-organization"
   }
 }
