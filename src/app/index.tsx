@@ -1,3 +1,4 @@
+import { theme } from "@/utils/theme";
 import {
   View,
   Text,
@@ -8,9 +9,42 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useState } from "react";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function StartScreen() {
   const router = useRouter();
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setAppIsReady(true);
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+
+    return () => setAppIsReady(false);
+  }, []);
+
+  useEffect(() => {
+    if (appIsReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
+  }
+
   return (
     <ImageBackground
       source={require("../assets/background.png")}
@@ -30,12 +64,12 @@ export default function StartScreen() {
         <View style={styles.container}>
           <View style={styles.content}>
             <View style={styles.header}>
-              <View>
+              <View style={styles.logoContainer}>
                 <Text style={styles.title}>IFPlan</Text>
                 <Text style={styles.subtitle}>Leite à Pasto</Text>
               </View>
 
-              <Text style={styles.subtitle}>
+              <Text style={styles.description}>
                 O IFPlan ajuda pequenos produtores de leite a realizarem
                 simulações e análises sobre produtividade, custos e
                 lucratividade baseados em dados reais da propriedade.
@@ -82,17 +116,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "800",
     color: "#fff",
     letterSpacing: -1,
   },
   subtitle: {
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "600",
+  },
+  description: {
     fontSize: 14,
     color: "#000000",
     textAlign: "center",
     fontWeight: "600",
-    marginTop: 8,
     lineHeight: 26,
   },
   illustrationContainer: {
@@ -109,24 +147,27 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.2)",
   },
   button: {
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.surface,
     paddingVertical: 20,
-    borderRadius: 16,
+    borderRadius: theme.borderRadius.lg,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+    ...theme.shadows.md,
   },
   buttonText: {
-    color: "#059669",
-    fontSize: 18,
-    fontWeight: "700",
+    color: theme.colors.primary,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold as any,
   },
   footer: {
     justifyContent: "flex-end",
     width: "100%",
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 24,
+    backgroundColor: "#0a642b2a",
+    padding: 16,
+    borderRadius: 16,
   },
   logo: {
     width: "auto",

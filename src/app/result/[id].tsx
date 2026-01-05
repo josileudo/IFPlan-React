@@ -5,24 +5,30 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { calculateSimulation } from "../../utils/formulas";
-import { SimulationInput } from "../../types";
+import { SimulationInput, SimulationOutput } from "../../types";
 import { SliderModal } from "../../components/SliderModal";
+import { MaterialIcons } from "@expo/vector-icons";
+import { theme } from "@/utils/theme";
 
 function ResultRow({
   label,
   value,
   unit,
   digits,
+  itemStyle,
 }: {
   label: string;
   value: number | null;
   unit?: string;
   digits?: number;
+  itemStyle?: StyleProp<ViewStyle>;
 }) {
   const displayValue =
     value !== null
@@ -33,10 +39,11 @@ function ResultRow({
       : "-";
 
   return (
-    <View style={styles.row}>
+    <View style={[styles.row]}>
       <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>
-        {displayValue} {unit && <Text style={styles.unit}>{unit}</Text>}
+      <Text style={[styles.value, itemStyle]}>
+        {displayValue}{" "}
+        {unit && <Text style={[styles.unit, itemStyle]}>{unit}</Text>}
       </Text>
     </View>
   );
@@ -45,13 +52,18 @@ function ResultRow({
 function Section({
   title,
   children,
+  icon,
 }: {
   title: string;
   children: React.ReactNode;
+  icon: keyof typeof MaterialIcons.glyphMap;
 }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionHeader}>
+        <MaterialIcons name={icon} size={22} color={theme.colors.primary} />
+        <Text style={styles.sectionTitle}>{title}</Text>
+      </View>
       {children}
     </View>
   );
@@ -67,10 +79,12 @@ export default function ResultScreen() {
     null
   );
   const [sliderVisible, setSliderVisible] = useState(false);
+  const [oldResults, setOldResults] = useState<SimulationOutput | null>(null);
 
   useEffect(() => {
     if (originalSim) {
       setCurrentInputs(originalSim.inputs);
+      setOldResults(originalSim.results);
     } else {
       // Handle loading or error
     }
@@ -84,9 +98,20 @@ export default function ResultScreen() {
   // Check if inputs (vars) differ from original
   const hasChanges = useMemo(() => {
     if (!originalSim || !currentInputs) return false;
-    // Simple JSON stringify comparison or specific fields check
     return JSON.stringify(originalSim.inputs) !== JSON.stringify(currentInputs);
   }, [originalSim, currentInputs]);
+
+  const applyColorByItemChanged = useCallback(
+    (item: string) => {
+      const hasResultChanged = oldResults?.[item] !== results?.[item];
+      if (!hasResultChanged) return {};
+
+      return oldResults?.[item] < results?.[item]
+        ? styles.positiveChangeItem
+        : styles.negativeChangeItem;
+    },
+    [results, oldResults]
+  );
 
   const handleSave = () => {
     if (currentInputs && id) {
@@ -111,71 +136,96 @@ export default function ResultScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Section title="Resumo Produtivo">
+        {/* MARK: Resumo Produtivo */}
+        <Section title="Resumo Produtivo" icon="bar-chart">
           <ResultRow
             label="Produção Diária"
             value={results.producaoDiaria}
             unit="L/dia"
+            itemStyle={applyColorByItemChanged("producaoDiaria")}
           />
           <ResultRow
             label="Produção Anual"
             value={results.producaoDeLeiteHaAno}
             unit="L/ha/ano"
+            itemStyle={applyColorByItemChanged("producaoDeLeiteHaAno")}
           />
           <ResultRow
             label="Capacidade Suporte"
             value={results.capacidadeDeSuporte}
             unit="animais"
+            itemStyle={applyColorByItemChanged("capacidadeDeSuporte")}
           />
           <ResultRow
             label="Consumo Total"
             value={results.consumoTotal}
             unit="kg MS/dia"
+            itemStyle={applyColorByItemChanged("consumoTotal")}
           />
         </Section>
 
-        <Section title="Indicadores Financeiros">
+        {/* MARK: Indicadores Financeiros */}
+        <Section title="Indicadores Financeiros" icon="monetization-on">
           <ResultRow
             label="Margem Líquida"
             value={results.ml}
             unit="R$/L"
             digits={3}
+            itemStyle={applyColorByItemChanged("ml")}
           />
           <ResultRow
             label="Lucro Anual (ML Anual)"
             value={results.mlAnual}
             unit="R$"
+            itemStyle={applyColorByItemChanged("mlAnual")}
           />
           <ResultRow
             label="Rentabilidade (TRCI)"
             value={results.trci}
             unit="%"
+            itemStyle={applyColorByItemChanged("trci")}
           />
           <ResultRow
             label="Payback"
             value={results.payback}
             unit="anos"
             digits={1}
+            itemStyle={applyColorByItemChanged("payback")}
           />
           <ResultRow
             label="Investimento Total"
             value={results.investimentoTotal}
             unit="R$"
+            itemStyle={applyColorByItemChanged("investimentoTotal")}
           />
-          <ResultRow label="COE Total" value={results.coeTotal} unit="R$/ano" />
+          <ResultRow
+            label="COE Total"
+            value={results.coeTotal}
+            unit="R$/ano"
+            itemStyle={applyColorByItemChanged("coeTotal")}
+          />
+          <ResultRow
+            label="Preço do Leite"
+            value={results.precoDoLeite}
+            unit="R$/L"
+            itemStyle={applyColorByItemChanged("precoDoLeite")}
+          />
         </Section>
 
-        <Section title="Ambiente e Estresse">
+        {/* MARK: Ambiente e Estresse */}
+        <Section title="Ambiente e Estresse" icon="eco">
           <ResultRow label="ITU" value={results.itu} digits={1} />
           <ResultRow
             label="Perda Receita (Estresse)"
             value={results.perdaDeReceitaComEstresse}
             unit="R$/ano"
+            itemStyle={applyColorByItemChanged("perdaDeReceitaComEstresse")}
           />
           <ResultRow
             label="Pegada Hídrica"
             value={results.pegadaHidrica}
             unit="L H2O/L leite"
+            itemStyle={applyColorByItemChanged("pegadaHidrica")}
           />
         </Section>
 
@@ -220,6 +270,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F9FAFB",
   },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginBottom: 16,
+    gap: 8,
+  },
   content: {
     padding: 24,
     paddingBottom: 100,
@@ -239,10 +296,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#059669",
-    marginBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#f1f5f9",
-    paddingBottom: 8,
   },
   row: {
     flexDirection: "row",
@@ -309,5 +364,11 @@ const styles = StyleSheet.create({
     color: "#334155",
     fontWeight: "600",
     fontSize: 16,
+  },
+  positiveChangeItem: {
+    color: "#059669",
+  },
+  negativeChangeItem: {
+    color: "#dc2626",
   },
 });

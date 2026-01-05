@@ -1,3 +1,4 @@
+import { theme } from "@/utils/theme";
 import { useStore } from "@/store/useStore";
 import { exportCsvAndShare } from "@/utils/exportCSV";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -6,7 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 
 export default function Layout() {
-  const { clearSimulations, getSimulation } = useStore();
+  const { clearSimulations, getSimulation, simulations } = useStore();
   const { id } = useGlobalSearchParams();
 
   const handleClearSimulations = () => {
@@ -62,14 +63,14 @@ export default function Layout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: theme.colors.surface,
           },
-          headerTintColor: "#059669",
+          headerTintColor: theme.colors.primary,
           headerTitleStyle: {
             fontWeight: "bold",
           },
           contentStyle: {
-            backgroundColor: "#F9FAFB",
+            backgroundColor: theme.colors.background,
           },
         }}
       >
@@ -84,13 +85,14 @@ export default function Layout() {
           options={{
             title: "Minhas Simulações",
             headerLargeTitle: Platform.OS !== "ios",
-            headerRight: () => (
-              <TouchableOpacity onPress={handleClearSimulations}>
-                <Text style={{ color: "#DC0000", fontWeight: "bold" }}>
-                  Limpar tudo
-                </Text>
-              </TouchableOpacity>
-            ),
+            headerRight: () =>
+              simulations.length > 0 && (
+                <TouchableOpacity onPress={handleClearSimulations}>
+                  <Text style={{ color: "#DC0000", fontWeight: "bold" }}>
+                    Limpar tudo
+                  </Text>
+                </TouchableOpacity>
+              ),
           }}
         />
         <Stack.Screen
@@ -106,10 +108,18 @@ export default function Layout() {
             title: "Resultados",
             headerRight: () => (
               <TouchableOpacity onPress={handleExport}>
-                <MaterialIcons name="share" size={24} color="#059669" />
+                <MaterialIcons
+                  name="download"
+                  size={24}
+                  color={theme.colors.primary}
+                />
               </TouchableOpacity>
             ),
           }}
+        />
+        <Stack.Screen
+          name="privacyPolicy/index"
+          options={{ title: "Política de Privacidade" }}
         />
       </Stack>
     </View>
