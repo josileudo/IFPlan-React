@@ -13,7 +13,7 @@
       "package": "com.jrconsultoria.ifplan",
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "foregroundImage": "./src/assets/ios-icon.png",
         "backgroundColor": "#059668"
       },
       "permissions": [
@@ -42,7 +42,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#059668",
-          "image": "./src/assets/splash-icon.png",
+          "image": "./src/assets/ios-icon.png",
           "imageWidth": 200
         }
       ],

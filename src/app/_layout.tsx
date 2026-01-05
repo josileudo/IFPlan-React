@@ -50,8 +50,9 @@ export default function Layout() {
     try {
       await exportCsvAndShare(
         [flattened],
-        `simulacao-${simulation.name || "sem-nome"}.csv`
+        `simulation-${simulation.name || "sem-nome"}.csv`
       );
+      Alert.alert("Sucesso", "CSV exportado com sucesso.");
     } catch (error) {
       Alert.alert("Erro", "Falha ao exportar CSV.");
     }
