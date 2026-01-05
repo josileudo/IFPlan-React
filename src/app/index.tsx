@@ -7,16 +7,18 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, Redirect } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
+import { useStore } from "@/store/useStore";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function StartScreen() {
   const router = useRouter();
   const [appIsReady, setAppIsReady] = useState(false);
+  const { hasSeenOnboarding } = useStore();
 
   useEffect(() => {
     async function prepare() {
@@ -31,8 +33,6 @@ export default function StartScreen() {
     }
 
     prepare();
-
-    return () => setAppIsReady(false);
   }, []);
 
   useEffect(() => {
@@ -43,6 +43,10 @@ export default function StartScreen() {
 
   if (!appIsReady) {
     return null;
+  }
+
+  if (!hasSeenOnboarding) {
+    return <Redirect href="/onboarding" />;
   }
 
   return (

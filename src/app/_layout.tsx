@@ -2,7 +2,7 @@ import { theme } from "@/utils/theme";
 import { useStore } from "@/store/useStore";
 import { exportCsvAndShare } from "@/utils/exportCSV";
 import { MaterialIcons } from "@expo/vector-icons";
-import { router, Stack, useGlobalSearchParams } from "expo-router";
+import { Stack, useGlobalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 
@@ -121,6 +121,12 @@ export default function Layout() {
         <Stack.Screen
           name="privacyPolicy/index"
           options={{ title: "Política de Privacidade" }}
+        />
+        <Stack.Screen
+          name="onboarding/index"
+          options={{
+            headerShown: false,
+          }}
         />
       </Stack>
     </View>

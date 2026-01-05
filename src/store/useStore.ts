@@ -14,6 +14,7 @@ const zustandStorage: StateStorage = {
 
 interface StoreState {
   simulations: Simulation[];
+  hasSeenOnboarding: boolean;
   addSimulation: (
     name: string,
     description: string,
@@ -28,12 +29,14 @@ interface StoreState {
   deleteSimulation: (id: string) => void;
   getSimulation: (id: string) => Simulation | undefined;
   clearSimulations: () => void;
+  completeOnboarding: () => void;
 }
 
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
       simulations: [],
+      hasSeenOnboarding: false,
       addSimulation: (name, description, input) => {
         const results = calculateSimulation(input);
         const newSimulation: Simulation = {
@@ -64,6 +67,7 @@ export const useStore = create<StoreState>()(
         }));
       },
       clearSimulations: () => set({ simulations: [] }),
+      completeOnboarding: () => set({ hasSeenOnboarding: true }),
       deleteSimulation: (id) =>
         set((state) => ({
           simulations: state.simulations.filter((s) => s.id !== id),
