@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.xl,
+    padding: theme.spacing.md,
     marginBottom: theme.spacing.md,
     ...theme.shadows.sm,
     borderWidth: 1,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: theme.typography.sizes.lg,
-    fontWeight: theme.typography.weights.bold as any,
+    fontWeight: theme.typography.weights.bold,
     color: theme.colors.text.primary,
     flex: 1,
     marginRight: theme.spacing.sm,
@@ -73,15 +73,16 @@ const styles = StyleSheet.create({
   date: {
     fontSize: theme.typography.sizes.xs,
     color: theme.colors.text.placeholder,
-    fontWeight: theme.typography.weights.medium as any,
+    fontWeight: theme.typography.weights.medium,
   },
   description: {
     fontSize: theme.typography.sizes.sm,
     color: theme.colors.text.secondary,
     lineHeight: 20,
+    marginBottom: theme.spacing.sm,
   },
   deleteButton: {
-    backgroundColor: "#f5e7e2", // keeping this specific pastel color for now or could find a theme equivalent
+    backgroundColor: "#f5e7e2",
     padding: 4,
     borderRadius: 50,
     alignItems: "center",
