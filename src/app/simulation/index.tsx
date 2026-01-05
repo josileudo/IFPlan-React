@@ -660,6 +660,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: theme.spacing.xl,
+    gap: 8,
   },
   saveButton: {
     backgroundColor: theme.colors.success,
