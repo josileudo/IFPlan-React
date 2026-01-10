@@ -1,7 +1,10 @@
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
-
+import * as Print from "expo-print";
+import { shareAsync } from "expo-sharing";
+import { Simulation } from "@/types";
+import { PDFTemplate } from "./pdfTemplate";
 /* ================= CSV ================= */
 
 export function toCsv(
@@ -100,5 +103,18 @@ export async function exportJsonAndShare(
     dialogTitle: "Exportar JSON",
   });
 
+  return uri;
+}
+
+/* ================= EXPORT PDF ================= */
+
+export async function exportPdfAndShare(
+  data: Simulation,
+  filename = "export.pdf"
+) {
+  // On iOS/android prints the given html. On web prints the HTML from the current page.
+  const { uri } = await Print.printToFileAsync({ html: PDFTemplate(data) });
+  console.log("File has been saved to:", uri);
+  await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
   return uri;
 }
