@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    fontSize: theme.typography.sizes.sm,
+    fontSize: theme.typography.sizes.xs,
     fontWeight: theme.typography.weights.semibold as any,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.xs,

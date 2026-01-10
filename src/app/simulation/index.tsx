@@ -3,11 +3,9 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
   TextInput,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -21,21 +19,16 @@ import { simulationSchema, SimulationSchema } from "./schema";
 import { MaterialIcons } from "@expo/vector-icons";
 import { theme } from "@/utils/theme";
 import { Button } from "@/components/Button";
-
-const STEPS = [
-  { title: "Identificação", key: "identification" },
-  { title: "Ambiente", key: "environment" },
-  { title: "Água e Solo", key: "water_soil" },
-  { title: "Propriedade", key: "property" },
-  { title: "Rebanho", key: "herd" },
-  { title: "Econômico", key: "economic" },
-];
+import { useToast } from "@/contexts/ToastContext";
+import { STEP_FIELDS, STEPS } from "./utils";
 
 export default function SimulationScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const isEditing = !!id;
   const [currentStep, setCurrentStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const { showToast } = useToast();
 
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
@@ -67,6 +60,7 @@ export default function SimulationScreen() {
   } = useForm<SimulationSchema>({
     resolver: zodResolver(simulationSchema),
     defaultValues: defaultValues as any,
+    shouldFocusError: true,
     shouldUnregister: false,
   });
 
@@ -83,19 +77,27 @@ export default function SimulationScreen() {
     Object.assign(inputs, inputValues);
 
     if (id) {
+      setIsLoading(true);
       updateSimulation(id, inputs);
       updateSimulationDetails(id, name, description || "");
       router.replace(`/result/${id}`);
+      setIsLoading(false);
+      showToast("Simulação atualizada com sucesso", "success");
     } else {
+      setIsLoading(true);
       addSimulation(name, description || "", inputs);
       router.replace("/dashboard");
+      setIsLoading(false);
+      showToast("Simulação criada com sucesso", "success");
     }
   };
 
   const nextStep = async () => {
-    if (currentStep < STEPS.length - 1) {
+    const fields = STEP_FIELDS[currentStep];
+    const isValid = await trigger(fields);
+
+    if (isValid && currentStep < STEPS.length - 1)
       setCurrentStep(currentStep + 1);
-    }
   };
 
   const prevStep = () => {
@@ -140,7 +142,7 @@ export default function SimulationScreen() {
           />
         </View>
 
-        {/* Step 1: Ambiente */}
+        {/*MARK: Step 1: Ambiente */}
         <View style={{ display: currentStep === 1 ? "flex" : "none" }}>
           <View style={styles.row}>
             <Controller
@@ -230,7 +232,7 @@ export default function SimulationScreen() {
           />
         </View>
 
-        {/* Step 2: Água e Solo */}
+        {/*MARK: Step 2: Água e Solo */}
         <View style={{ display: currentStep === 2 ? "flex" : "none" }}>
           <View style={styles.row}>
             <Controller
@@ -538,10 +540,6 @@ export default function SimulationScreen() {
                     </Text>
                   )}
                 </View>
-                {/* Optional: Label below step */}
-                {/* <Text style={[styles.stepLabel, isActive && styles.activeStepLabel]}>
-                  {step.title}
-                </Text> */}
                 {index < STEPS.length - 1 && <View style={styles.stepLine} />}
               </View>
             );
@@ -551,38 +549,36 @@ export default function SimulationScreen() {
         <Text style={styles.sectionTitle}>{STEPS[currentStep].title}</Text>
 
         <View style={styles.formContainer}>{renderStepContent()}</View>
-
-        <View style={styles.navigationButtons}>
-          <Button
-            title="Voltar"
-            type="secondary"
-            onPress={prevStep}
-            style={styles.navButtons}
-            disabled={currentStep === 0}
-            icon="chevron-left"
-          />
-
-          {currentStep === STEPS.length - 1 ? (
-            <Button
-              title={isEditing ? "Salvar" : "Finalizar"}
-              style={[styles.navButtons, styles.saveButton]}
-              onPress={handleSubmit(onSubmit)}
-              icon="check"
-              iconSide="right"
-            />
-          ) : (
-            <Button
-              title="Próximo"
-              onPress={nextStep}
-              style={styles.navButtons}
-              icon="chevron-right"
-              iconSide="right"
-            />
-          )}
-        </View>
-
-        <View style={{ height: 40 }} />
       </ScrollView>
+
+      <View style={styles.navigationButtons}>
+        <Button
+          title="Voltar"
+          type="secondary"
+          onPress={prevStep}
+          style={styles.navButtons}
+          disabled={currentStep === 0}
+          icon="chevron-left"
+        />
+
+        {currentStep === STEPS.length - 1 ? (
+          <Button
+            title={isEditing ? "Salvar" : "Finalizar"}
+            style={[styles.navButtons, styles.saveButton]}
+            onPress={handleSubmit(onSubmit)}
+            icon="check"
+            iconSide="right"
+          />
+        ) : (
+          <Button
+            title="Próximo"
+            onPress={nextStep}
+            style={styles.navButtons}
+            icon="chevron-right"
+            iconSide="right"
+          />
+        )}
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -656,16 +652,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navigationButtons: {
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.surface,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: theme.spacing.xl,
+    padding: theme.spacing.lg,
+    paddingBottom: Platform.OS === "ios" ? theme.spacing.xl : theme.spacing.lg,
     gap: 8,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+    ...theme.shadows.md,
   },
   saveButton: {
     backgroundColor: theme.colors.success,
   },
   navButtons: {
-    width: "48%",
+    flex: 1,
   },
 });

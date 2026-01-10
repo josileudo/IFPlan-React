@@ -33,8 +33,8 @@ function ResultRow({
   const displayValue =
     value !== null
       ? value.toLocaleString("pt-BR", {
-          minimumFractionDigits: digits || 2,
-          maximumFractionDigits: digits || 2,
+          minimumFractionDigits: digits ?? 2,
+          maximumFractionDigits: digits ?? 2,
         })
       : "-";
 
@@ -135,50 +135,78 @@ export default function ResultScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         {/* MARK: Resumo Produtivo */}
         <Section title="Resumo Produtivo" icon="bar-chart">
           <ResultRow
-            label="Produção Diária"
+            label="Produção diária"
             value={results.producaoDiaria}
             unit="L/dia"
+            digits={0}
             itemStyle={applyColorByItemChanged("producaoDiaria")}
           />
           <ResultRow
-            label="Produção Anual"
+            label="Produção anual"
             value={results.producaoDeLeiteHaAno}
             unit="L/ha/ano"
+            digits={0}
             itemStyle={applyColorByItemChanged("producaoDeLeiteHaAno")}
           />
           <ResultRow
-            label="Capacidade Suporte"
+            label="Capacidade suporte"
             value={results.capacidadeDeSuporte}
             unit="animais"
+            digits={1}
             itemStyle={applyColorByItemChanged("capacidadeDeSuporte")}
           />
           <ResultRow
-            label="Consumo Total"
-            value={results.consumoTotal}
-            unit="kg MS/dia"
-            itemStyle={applyColorByItemChanged("consumoTotal")}
+            label="Produção forragem"
+            value={results.producaoDeForragem}
+            unit="kg MV/m2"
+            digits={3}
+            itemStyle={applyColorByItemChanged("producaoDeForragem")}
+          />
+          <ResultRow
+            label="Produção de leite"
+            value={results.producaoDeLeiteHaDia}
+            unit="L/ha/dia"
+            digits={1}
+            itemStyle={applyColorByItemChanged("producaoDeLeiteHaDia")}
+          />
+          <ResultRow
+            label="Taxa de lotação"
+            value={results.taxaDeLotacao}
+            unit="vacas/ha"
+            digits={1}
+            itemStyle={applyColorByItemChanged("taxaDeLotacao")}
+          />
+          <ResultRow
+            label="Tensão da água no solo"
+            value={results.tensaoDaAguaNoSolo}
+            unit="bar"
+            digits={1}
+            itemStyle={applyColorByItemChanged("tensaoDaAguaNoSolo")}
           />
         </Section>
 
         {/* MARK: Indicadores Financeiros */}
         <Section title="Indicadores Financeiros" icon="monetization-on">
           <ResultRow
-            label="Margem Líquida"
+            label="Margem líquida"
             value={results.ml}
             unit="R$/L"
             digits={3}
             itemStyle={applyColorByItemChanged("ml")}
           />
-          <ResultRow
-            label="Lucro Anual (ML Anual)"
+          {/* <ResultRow
+            label="Lucro anual (ML Anual)"
             value={results.mlAnual}
             unit="R$"
             itemStyle={applyColorByItemChanged("mlAnual")}
-          />
+          /> */}
           <ResultRow
             label="Rentabilidade (TRCI)"
             value={results.trci}
@@ -193,22 +221,31 @@ export default function ResultScreen() {
             itemStyle={applyColorByItemChanged("payback")}
           />
           <ResultRow
-            label="Investimento Total"
-            value={results.investimentoTotal}
-            unit="R$"
-            itemStyle={applyColorByItemChanged("investimentoTotal")}
-          />
-          <ResultRow
-            label="COE Total"
-            value={results.coeTotal}
-            unit="R$/ano"
-            itemStyle={applyColorByItemChanged("coeTotal")}
-          />
-          <ResultRow
             label="Preço do Leite"
             value={results.precoDoLeite}
             unit="R$/L"
             itemStyle={applyColorByItemChanged("precoDoLeite")}
+          />
+          <ResultRow
+            label="COE por litro"
+            value={results.coe}
+            unit="R$/L"
+            digits={3}
+            itemStyle={applyColorByItemChanged("coe")}
+          />
+          <ResultRow
+            label="COT por litro"
+            value={results.cot}
+            unit="R$/L"
+            digits={3}
+            itemStyle={applyColorByItemChanged("cot")}
+          />
+          <ResultRow
+            label="Receita por área"
+            value={results.receitaPorArea}
+            unit="R$/ha/ano"
+            digits={2}
+            itemStyle={applyColorByItemChanged("receitaPorArea")}
           />
         </Section>
 
@@ -225,7 +262,15 @@ export default function ResultScreen() {
             label="Pegada Hídrica"
             value={results.pegadaHidrica}
             unit="L H2O/L leite"
+            digits={1}
             itemStyle={applyColorByItemChanged("pegadaHidrica")}
+          />
+          <ResultRow
+            label="Perda de produção"
+            value={results.producaoDeLeiteHaDia}
+            unit="L/vaca/dia"
+            digits={1}
+            itemStyle={applyColorByItemChanged("producaoDeLeiteHaDia")}
           />
         </Section>
 
@@ -268,7 +313,7 @@ export default function ResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: theme.colors.background,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -278,19 +323,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   content: {
-    padding: 24,
+    padding: theme.spacing.md,
     paddingBottom: 100,
+    gap: theme.spacing.lg,
   },
   section: {
-    marginBottom: 24,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
+    borderWidth: 1,
+    borderRadius: theme.borderRadius.lg,
+    borderColor: theme.colors.border,
   },
   sectionTitle: {
     fontSize: 18,
