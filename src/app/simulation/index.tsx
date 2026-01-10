@@ -140,7 +140,7 @@ export default function SimulationScreen() {
           />
         </View>
 
-        {/* Step 1: Ambiente */}
+        {/*MARK: Step 1: Ambiente */}
         <View style={{ display: currentStep === 1 ? "flex" : "none" }}>
           <View style={styles.row}>
             <Controller
@@ -230,7 +230,7 @@ export default function SimulationScreen() {
           />
         </View>
 
-        {/* Step 2: Água e Solo */}
+        {/*MARK: Step 2: Água e Solo */}
         <View style={{ display: currentStep === 2 ? "flex" : "none" }}>
           <View style={styles.row}>
             <Controller
