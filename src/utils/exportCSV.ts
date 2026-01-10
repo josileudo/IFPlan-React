@@ -113,7 +113,7 @@ export async function exportPdfAndShare(
   filename = "export.pdf"
 ) {
   // On iOS/android prints the given html. On web prints the HTML from the current page.
-  const { uri } = await Print.printToFileAsync({ html: PDFTemplate(data) });
+  const { uri } = await Print.printToFileAsync({ html: PDFTemplate(data),  });
   console.log("File has been saved to:", uri);
   await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
   return uri;

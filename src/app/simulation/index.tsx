@@ -3,11 +3,9 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
   TextInput,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -22,15 +20,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { theme } from "@/utils/theme";
 import { Button } from "@/components/Button";
 import { useToast } from "@/contexts/ToastContext";
-
-const STEPS = [
-  { title: "Identificação", key: "identification" },
-  { title: "Ambiente", key: "environment" },
-  { title: "Água e Solo", key: "water_soil" },
-  { title: "Propriedade", key: "property" },
-  { title: "Rebanho", key: "herd" },
-  { title: "Econômico", key: "economic" },
-];
+import { STEP_FIELDS, STEPS } from "./utils";
 
 export default function SimulationScreen() {
   const router = useRouter();
@@ -70,6 +60,7 @@ export default function SimulationScreen() {
   } = useForm<SimulationSchema>({
     resolver: zodResolver(simulationSchema),
     defaultValues: defaultValues as any,
+    shouldFocusError: true,
     shouldUnregister: false,
   });
 
@@ -102,9 +93,11 @@ export default function SimulationScreen() {
   };
 
   const nextStep = async () => {
-    if (currentStep < STEPS.length - 1) {
+    const fields = STEP_FIELDS[currentStep];
+    const isValid = await trigger(fields);
+
+    if (isValid && currentStep < STEPS.length - 1)
       setCurrentStep(currentStep + 1);
-    }
   };
 
   const prevStep = () => {
