@@ -135,7 +135,10 @@ export default function ResultScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         {/* MARK: Resumo Produtivo */}
         <Section title="Resumo Produtivo" icon="bar-chart">
           <ResultRow
@@ -217,18 +220,6 @@ export default function ResultScreen() {
             digits={1}
             itemStyle={applyColorByItemChanged("payback")}
           />
-          {/* <ResultRow
-            label="Investimento total"
-            value={results.investimentoTotal}
-            unit="R$"
-            itemStyle={applyColorByItemChanged("investimentoTotal")}
-          /> */}
-          {/* <ResultRow
-            label="COE Total"
-            value={results.coeTotal}
-            unit="R$/ano"
-            itemStyle={applyColorByItemChanged("coeTotal")}
-          /> */}
           <ResultRow
             label="Preço do Leite"
             value={results.precoDoLeite}
@@ -322,7 +313,7 @@ export default function ResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: theme.colors.background,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -332,16 +323,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   content: {
-    padding: 24,
+    padding: theme.spacing.md,
     paddingBottom: 100,
+    gap: theme.spacing.lg,
   },
   section: {
-    marginBottom: 24,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
     borderWidth: 1,
-    borderColor: theme.colors.disabled,
+    borderRadius: theme.borderRadius.lg,
+    borderColor: theme.colors.border,
   },
   sectionTitle: {
     fontSize: 18,

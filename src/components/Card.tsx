@@ -50,11 +50,10 @@ export function Card({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.md,
-    ...theme.shadows.sm,
     borderWidth: 1,
+    borderRadius: theme.borderRadius.lg,
     borderColor: theme.colors.border,
   },
   header: {

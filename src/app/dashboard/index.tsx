@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.weights.semibold as any,
   },
   listContent: {
-    padding: theme.spacing.lg,
+    padding: theme.spacing.md,
     paddingBottom: 100,
   },
   emptyState: {
