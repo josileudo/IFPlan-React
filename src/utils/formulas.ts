@@ -1,7 +1,7 @@
 import { SimulationInput, SimulationOutput } from "../types";
 
 export const calculateSimulation = (
-  input: SimulationInput
+  input: SimulationInput,
 ): SimulationOutput => {
   // Default adjustment variables to 1.0 (neutral/no adjustment)
   const varFOR = input.varFOR ?? 1;
@@ -214,7 +214,7 @@ export const calculateSimulation = (
 
   // taxaDeLotacao: Vacas / ha.
   // Total cows / Area
-  const taxaDeLotacao = totalCows / input.area;
+  const taxaDeLotacao = capacidadeDeSuporte / input.area;
 
   return {
     aguaAplicada: !isNaN(aguaAplicada) ? aguaAplicada : 0,

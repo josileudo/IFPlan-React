@@ -191,7 +191,7 @@ export default function SimulationScreen() {
                   value={value ? String(value) : ""}
                   onChangeText={onChange}
                   keyboardType="numeric"
-                  precision={1}
+                  precision={3}
                   style={styles.halfInput}
                   error={errors.precipitacao?.message}
                 />

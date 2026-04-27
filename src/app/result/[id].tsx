@@ -76,7 +76,7 @@ export default function ResultScreen() {
 
   const originalSim = getSimulation(id!);
   const [currentInputs, setCurrentInputs] = useState<SimulationInput | null>(
-    null
+    null,
   );
   const [sliderVisible, setSliderVisible] = useState(false);
   const [oldResults, setOldResults] = useState<SimulationOutput | null>(null);
@@ -110,7 +110,7 @@ export default function ResultScreen() {
         ? styles.positiveChangeItem
         : styles.negativeChangeItem;
     },
-    [results, oldResults]
+    [results, oldResults],
   );
 
   const handleSave = () => {
@@ -149,13 +149,6 @@ export default function ResultScreen() {
             itemStyle={applyColorByItemChanged("producaoDiaria")}
           />
           <ResultRow
-            label="Produção anual"
-            value={results.producaoDeLeiteHaAno}
-            unit="L/ha/ano"
-            digits={0}
-            itemStyle={applyColorByItemChanged("producaoDeLeiteHaAno")}
-          />
-          <ResultRow
             label="Capacidade suporte"
             value={results.capacidadeDeSuporte}
             unit="animais"
@@ -170,11 +163,18 @@ export default function ResultScreen() {
             itemStyle={applyColorByItemChanged("producaoDeForragem")}
           />
           <ResultRow
-            label="Produção de leite"
+            label="Produção de leite diária"
             value={results.producaoDeLeiteHaDia}
             unit="L/ha/dia"
             digits={1}
             itemStyle={applyColorByItemChanged("producaoDeLeiteHaDia")}
+          />
+          <ResultRow
+            label="Produção de leite anual"
+            value={results.producaoDeLeiteHaAno}
+            unit="L/ha/ano"
+            digits={0}
+            itemStyle={applyColorByItemChanged("producaoDeLeiteHaAno")}
           />
           <ResultRow
             label="Taxa de lotação"
@@ -184,10 +184,17 @@ export default function ResultScreen() {
             itemStyle={applyColorByItemChanged("taxaDeLotacao")}
           />
           <ResultRow
+            label="DPL"
+            value={results.dpl}
+            unit="L/vaca/dia"
+            digits={1}
+            itemStyle={applyColorByItemChanged("dpl")}
+          />
+          <ResultRow
             label="Tensão da água no solo"
             value={results.tensaoDaAguaNoSolo}
             unit="bar"
-            digits={1}
+            digits={3}
             itemStyle={applyColorByItemChanged("tensaoDaAguaNoSolo")}
           />
         </Section>
@@ -224,6 +231,7 @@ export default function ResultScreen() {
             label="Preço do Leite"
             value={results.precoDoLeite}
             unit="R$/L"
+            digits={3}
             itemStyle={applyColorByItemChanged("precoDoLeite")}
           />
           <ResultRow
