@@ -2,7 +2,7 @@
   "expo": {
     "name": "IFPlan",
     "slug": "ifplan-leite-a-pasto",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "icon": "./src/assets/icon.png",
     "splash": {
       "image": "./src/assets/ios-icon.png",
@@ -40,13 +40,22 @@
     },
     "plugins": [
       "expo-router",
-      "expo-asset",
+      "./plugins/withAndroidRestrictions.js",
       [
         "expo-splash-screen",
         {
           "backgroundColor": "#059668",
           "image": "./src/assets/ios-icon.png",
           "imageWidth": 200
+        }
+      ],
+      [
+        "react-native-edge-to-edge",
+        {
+          "android": {
+            "parentTheme": "Default",
+            "enforceNavigationBarContrast": false
+          }
         }
       ],
       [
@@ -61,8 +70,7 @@
             "buildToolsVersion": "35.0.0"
           }
         }
-      ],
-      "./plugins/withAndroidRestrictions.js"
+      ]
     ],
     "extra": {
       "router": {},
