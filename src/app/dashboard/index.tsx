@@ -5,17 +5,24 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  TextInput,
 } from "react-native";
-import { theme } from "@/utils/theme";
+import { useTheme } from "@/utils/theme";
 import { useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
 import { Card } from "../../components/Card";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useState } from "react";
+import { AnimatedButton } from "@/components/AnimatedButton";
+import { useSafeAreaInsets, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Dashboard() {
   const router = useRouter();
+  const { colors, spacing, typography, borderRadius, isDark } = useTheme();
   const simulations = useStore((state) => state.simulations);
   const deleteSimulation = useStore((state) => state.deleteSimulation);
+  const [searchQuery, setSearchQuery] = useState("");
+  const insets = useSafeAreaInsets();
 
   const handleDelete = (id: string) => {
     Alert.alert("Excluir", "Tem certeza que deseja excluir esta simulação?", [
@@ -32,21 +39,45 @@ export default function Dashboard() {
     ]);
   };
 
+  const filteredSimulations = simulations.filter(sim => 
+    sim.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    sim.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
         <TouchableOpacity
-          style={styles.headerButton}
+          style={[styles.headerButton, { backgroundColor: colors.surface }]}
           onPress={() => {
             router.push("/privacyPolicy");
           }}
         >
-          <Text style={styles.headerButtonText}>Política de Privacidade</Text>
-          <MaterialIcons name="arrow-right" size={20} color="#000" />
+          <Text style={[styles.headerButtonText, { color: colors.text.primary }]}>Política de Privacidade</Text>
+          <MaterialIcons name="arrow-right" size={20} color={colors.text.primary} />
         </TouchableOpacity>
       </View>
+      
+      <View style={[styles.searchContainer, { paddingHorizontal: spacing.md }]}>
+        <View style={[styles.searchInputContainer, { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: borderRadius.md }]}>
+          <MaterialIcons name="search" size={20} color={colors.text.placeholder} style={styles.searchIcon} />
+          <TextInput
+            style={[styles.searchInput, { color: colors.text.primary }]}
+            placeholder="Buscar simulação..."
+            placeholderTextColor={colors.text.placeholder}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery("")}>
+              <MaterialIcons name="close" size={20} color={colors.text.placeholder} />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
       <FlatList
-        data={simulations}
+        data={filteredSimulations}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
@@ -60,22 +91,21 @@ export default function Dashboard() {
         )}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>Nenhuma simulação</Text>
-            <Text style={styles.emptyText}>
-              Crie sua primeira simulação para começar a planejar.
+            <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>Nenhuma simulação</Text>
+            <Text style={[styles.emptyText, { color: colors.text.secondary }]}>
+              {searchQuery ? "Nenhuma simulação encontrada com essa busca." : "Crie sua primeira simulação para começar a planejar."}
             </Text>
           </View>
         }
       />
 
-      <View style={styles.fabContainer}>
-        <TouchableOpacity
-          style={styles.fab}
+      <View style={[styles.fabContainer, { bottom: Math.max(insets.bottom, 16) + 16 }]}>
+        <AnimatedButton
+          style={[styles.fab, { backgroundColor: colors.primary }]}
           onPress={() => router.push("/simulation")}
-          activeOpacity={0.8}
         >
-          <Text style={styles.fabText}>+</Text>
-        </TouchableOpacity>
+          <MaterialIcons name="add" size={32} color={colors.surface} />
+        </AnimatedButton>
       </View>
     </View>
   );
@@ -84,32 +114,40 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  title: {
-    fontSize: theme.typography.sizes.lg,
-    fontWeight: theme.typography.weights.bold as any,
-    color: theme.colors.text.primary,
-    margin: theme.spacing.sm,
   },
   header: {
     flexDirection: "row",
     justifyContent: "center",
   },
   headerButton: {
-    padding: theme.spacing.sm,
-    borderRadius: theme.borderRadius.sm,
+    padding: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: theme.colors.surface,
   },
   headerButtonText: {
-    fontSize: theme.typography.sizes.xs,
-    fontWeight: theme.typography.weights.semibold as any,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  searchContainer: {
+    marginVertical: 8,
+  },
+  searchInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    height: 48,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
   },
   listContent: {
-    padding: theme.spacing.md,
+    padding: 8,
     paddingBottom: 100,
   },
   emptyState: {
@@ -118,34 +156,31 @@ const styles = StyleSheet.create({
     marginTop: 100,
   },
   emptyTitle: {
-    fontSize: theme.typography.sizes.xl,
-    fontWeight: theme.typography.weights.bold as any,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.sm,
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 8,
   },
   emptyText: {
-    fontSize: theme.typography.sizes.md,
-    color: theme.colors.text.secondary,
+    fontSize: 16,
     textAlign: "center",
   },
   fabContainer: {
     position: "absolute",
-    bottom: theme.spacing.xl,
-    right: theme.spacing.lg,
+    bottom: 24,
+    right: 16,
   },
   fab: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: theme.colors.primary,
     justifyContent: "center",
     alignItems: "center",
-    ...theme.shadows.lg,
-  },
-  fabText: {
-    color: theme.colors.surface,
-    fontSize: theme.typography.sizes["3xl"],
-    marginTop: -4, // visual alignment
-    fontWeight: theme.typography.weights.regular as any,
+    elevation: 8,
+    shadowColor: "#059669",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
   },
 });

@@ -1,10 +1,10 @@
-import { theme } from "@/utils/theme";
 import { useStore } from "@/store/useStore";
 import { exportPdfAndShare } from "@/utils/exportCSV";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Stack, useGlobalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "@/utils/theme";
 import { Simulation } from "@/types";
 import { Loading } from "@/components/Loading";
 import { LoadingProvider, useLoading } from "@/contexts/LoadingContext";
@@ -16,6 +16,7 @@ function LayoutContent() {
   const { setIsLoading } = useLoading();
   const { showToast } = useToast();
   const { id } = useGlobalSearchParams();
+  const theme = useTheme();
 
   const handleClearSimulations = () => {
     Alert.alert(
@@ -37,7 +38,7 @@ function LayoutContent() {
           },
           style: "destructive",
         },
-      ]
+      ],
     );
   };
 
@@ -63,7 +64,7 @@ function LayoutContent() {
       setIsLoading(true);
       await exportPdfAndShare(
         flattened,
-        `simulation-${simulation.name || "sem-nome"}.pdf`
+        `simulation-${simulation.name || "sem-nome"}.pdf`,
       );
       showToast("PDF exportado com sucesso!", "success");
     } catch (error) {

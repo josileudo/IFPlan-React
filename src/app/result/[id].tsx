@@ -16,6 +16,7 @@ import { SimulationInput, SimulationOutput } from "../../types";
 import { SliderModal } from "../../components/SliderModal";
 import { MaterialIcons } from "@expo/vector-icons";
 import { theme } from "@/utils/theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function ResultRow({
   label,
@@ -73,6 +74,7 @@ export default function ResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { getSimulation, updateSimulation } = useStore();
+  const insets = useSafeAreaInsets();
 
   const originalSim = getSimulation(id!);
   const [currentInputs, setCurrentInputs] = useState<SimulationInput | null>(
@@ -285,7 +287,9 @@ export default function ResultScreen() {
         <View style={{ height: 40 }} />
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View
+        style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}
+      >
         {hasChanges ? (
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.footerButtonText}>Salvar Alterações</Text>
@@ -380,7 +384,6 @@ const styles = StyleSheet.create({
     borderTopColor: "#e2e8f0",
     flexDirection: "row",
     gap: 16,
-    paddingBottom: 32,
   },
   primaryButton: {
     flex: 1,

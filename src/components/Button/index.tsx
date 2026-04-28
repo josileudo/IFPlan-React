@@ -2,13 +2,14 @@ import {
   ActivityIndicator,
   StyleSheet,
   Text,
-  TouchableOpacity,
   TouchableOpacityProps,
   View,
+  Animated,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { theme } from "@/utils/theme";
-import { useMemo } from "react";
+import { useTheme } from "@/utils/theme";
+import { useMemo, useRef } from "react";
 
 type Props = TouchableOpacityProps & {
   title: string;
@@ -26,97 +27,139 @@ export const Button = ({
   iconSide = "left",
   ...rest
 }: Props) => {
+  const { colors } = useTheme();
+
   const isDisabled = useMemo(
     () => isProcessing || rest.disabled,
-    [isProcessing, rest.disabled]
+    [isProcessing, rest.disabled],
   );
 
+  const scaleValue = useRef(new Animated.Value(1)).current;
+  const opacityValue = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    if (isDisabled) return;
+    Animated.parallel([
+      Animated.timing(scaleValue, {
+        toValue: 0.96,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityValue, {
+        toValue: 0.8,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handlePressOut = () => {
+    if (isDisabled) return;
+    Animated.parallel([
+      Animated.spring(scaleValue, {
+        toValue: 1,
+        friction: 4,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityValue, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const getBackgroundColor = () => {
+    if (isDisabled) return colors.disabled;
+    if (type === "secondary") return colors.surface;
+    return colors.primary;
+  };
+
+  const getTextColor = () => {
+    if (isDisabled) return colors.text.secondary;
+    if (type === "secondary") return colors.primary;
+    return colors.text.light;
+  };
+
   return (
-    <TouchableOpacity
-      {...rest}
-      style={[
-        styles.container,
-        rest.style,
-        type === "secondary" && styles.secondary,
-        isDisabled && styles.disabled,
-      ]}
-      activeOpacity={0.8}
-      disabled={isDisabled}
+    <TouchableWithoutFeedback
+      onPress={isDisabled ? undefined : rest.onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
     >
-      <View style={styles.content}>
-        {iconSide === "left" && icon && (
-          <MaterialIcons
-            name={icon}
-            size={24}
-            color={
-              type === "secondary"
-                ? theme.colors.primary
-                : theme.colors.background
-            }
-          />
-        )}
-        <Text
-          style={[
-            styles.text,
-            type === "secondary" && styles.textSecondary,
-            isDisabled && styles.textDisabled,
-          ]}
-        >
-          {isProcessing ? (
-            <ActivityIndicator size="small" color={theme.colors.background} />
-          ) : (
-            title
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            backgroundColor: getBackgroundColor(),
+            transform: [{ scale: scaleValue }],
+            opacity: isDisabled ? 0.7 : opacityValue,
+          },
+          type === "secondary" && {
+            borderWidth: 1,
+            borderColor: isDisabled ? colors.border : colors.primary,
+          },
+          rest.style,
+        ]}
+      >
+        <View style={styles.content}>
+          {iconSide === "left" && icon && (
+            <MaterialIcons
+              name={icon}
+              size={24}
+              color={getTextColor()}
+              style={{ position: "absolute", left: 16, zIndex: 1 }}
+            />
           )}
-        </Text>
-        {iconSide === "right" && icon && (
-          <MaterialIcons
-            name={icon}
-            size={24}
-            color={
-              type === "secondary"
-                ? theme.colors.primary
-                : theme.colors.background
-            }
-          />
-        )}
-      </View>
-    </TouchableOpacity>
+          <Text
+            style={[
+              styles.text,
+              { color: getTextColor(), textAlign: "center" },
+            ]}
+          >
+            {isProcessing ? (
+              <ActivityIndicator size="small" color={getTextColor()} />
+            ) : (
+              title
+            )}
+          </Text>
+          {iconSide === "right" && icon && (
+            <MaterialIcons
+              name={icon}
+              size={24}
+              color={getTextColor()}
+              style={{ position: "absolute", right: 16, zIndex: 1 }}
+            />
+          )}
+        </View>
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: theme.colors.primary,
     height: 48,
     width: "100%",
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   content: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    justifyContent: "center",
+    paddingHorizontal: 16,
   },
   text: {
     fontSize: 14,
-    color: theme.colors.text.light,
     fontWeight: "bold",
-  },
-  disabled: {
-    backgroundColor: theme.colors.disabled,
-    borderColor: theme.colors.border,
-  },
-  textDisabled: {
-    color: theme.colors.text.secondary,
-  },
-  secondary: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.primary,
-    borderWidth: 1,
-  },
-  textSecondary: {
-    color: theme.colors.text.secondary,
   },
 });

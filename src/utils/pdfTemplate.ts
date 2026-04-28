@@ -208,61 +208,61 @@ export const PDFTemplate = (data: Simulation) => {
         <!-- Ambiente -->
         <div class="data-row"><span class="data-key">Temp. Mínima</span><span class="data-val">${formatNumber(
           data.inputs.temperaturaMinima,
-          1
+          1,
         )}<span class="unit">°C</span></span></div>
         <div class="data-row"><span class="data-key">Temp. Máxima</span><span class="data-val">${formatNumber(
           data.inputs.temperaturaMaxima,
-          1
+          1,
         )}<span class="unit">°C</span></span></div>
         <div class="data-row"><span class="data-key">Precipitação</span><span class="data-val">${formatNumber(
           data.inputs.precipitacao,
-          1
+          1,
         )}<span class="unit">mm/dia</span></span></div>
         <div class="data-row"><span class="data-key">Umidade Relativa</span><span class="data-val">${formatNumber(
           data.inputs.umidadeRelativa,
-          1
+          1,
         )}<span class="unit">%</span></span></div>
         <div class="data-row"><span class="data-key">Velocidade do Vento</span><span class="data-val">${formatNumber(
           data.inputs.velocidadeDoVento,
-          1
+          1,
         )}<span class="unit">m/s</span></span></div>
         
         <!-- Água e Solo -->
         <div class="data-row"><span class="data-key">Água Disponível</span><span class="data-val">${formatNumber(
           data.inputs.aguaDisponivelParaIrrigacao,
-          0
+          0,
         )}<span class="unit">m³/dia</span></span></div>
         <div class="data-row"><span class="data-key">Água Outros Usos</span><span class="data-val">${formatNumber(
           data.inputs.aguaDeOutrosUsos,
-          0
+          0,
         )}<span class="unit">L/mês</span></span></div>
         <div class="data-row"><span class="data-key">Dose de N</span><span class="data-val">${formatNumber(
           data.inputs.doseDeN,
-          0
+          0,
         )}<span class="unit">kg N/ha/ano</span></span></div>
         
         <!-- Propriedade -->
         <div class="data-row"><span class="data-key">Área</span><span class="data-val">${formatNumber(
           data.inputs.area,
-          1
+          1,
         )}<span class="unit">ha</span></span></div>
         <div class="data-row"><span class="data-key">Nº de Piquetes</span><span class="data-val">${formatNumber(
           data.inputs.numeroDePiquetes,
-          0
+          0,
         )}</span></div>
         
         <!-- Rebanho -->
         <div class="data-row"><span class="data-key">Peso Corporal</span><span class="data-val">${formatNumber(
           data.inputs.pesoCorporal,
-          0
+          0,
         )}<span class="unit">kg</span></span></div>
         <div class="data-row"><span class="data-key">Produção de Leite</span><span class="data-val">${formatNumber(
           data.inputs.producaoDeLeite,
-          1
+          1,
         )}<span class="unit">L/vaca/dia</span></span></div>
         <div class="data-row"><span class="data-key">Vacas em Lactação</span><span class="data-val">${formatNumber(
           data.inputs.vacasEmLactacao,
-          1
+          1,
         )}<span class="unit">%</span></span></div>
       </div>
 
@@ -272,39 +272,39 @@ export const PDFTemplate = (data: Simulation) => {
       <div class="data-list">
         <div class="data-row"><span class="data-key">Produção Diária</span><span class="data-val">${formatNumber(
           data.results.producaoDiaria,
-          0
+          0,
         )}<span class="unit">L/dia</span></span></div>
         <div class="data-row"><span class="data-key">Produção Anual</span><span class="data-val">${formatNumber(
           data.results.producaoDeLeiteHaAno,
-          0
+          0,
         )}<span class="unit">L/ha/ano</span></span></div>
         <div class="data-row"><span class="data-key">Capacidade Suporte</span><span class="data-val">${formatNumber(
           data.results.capacidadeDeSuporte,
-          1
+          1,
         )}<span class="unit">animais</span></span></div>
         <div class="data-row"><span class="data-key">Taxa de Lotação</span><span class="data-val">${formatNumber(
           data.results.taxaDeLotacao,
-          1
+          1,
         )}<span class="unit">vacas/ha</span></span></div>
         <div class="data-row"><span class="data-key">Margem Líquida</span><span class="data-val">${formatNumber(
           data.results.ml,
-          3
+          3,
         )}<span class="unit">R$/L</span></span></div>
         <div class="data-row"><span class="data-key">TRCI (Rentabilidade)</span><span class="data-val">${formatNumber(
           data.results.trci,
-          2
+          2,
         )}<span class="unit">%</span></span></div>
         <div class="data-row"><span class="data-key">Payback</span><span class="data-val">${formatNumber(
           data.results.payback,
-          1
+          1,
         )}<span class="unit">anos</span></span></div>
         <div class="data-row"><span class="data-key">Pegada Hídrica</span><span class="data-val">${formatNumber(
           data.results.pegadaHidrica,
-          1
+          1,
         )}<span class="unit">L H2O/L leite</span></span></div>
         <div class="data-row"><span class="data-key">ITU</span><span class="data-val">${formatNumber(
           data.results.itu,
-          1
+          1,
         )}</span></div>
       </div>
 

@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
   ImageBackground,
 } from "react-native";
 import { useRouter, Redirect } from "expo-router";
@@ -12,6 +11,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
+import { Button } from "@/components/Button";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,7 +25,6 @@ export default function StartScreen() {
     async function prepare() {
       try {
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        setAppIsReady(true);
       } catch (e) {
         console.warn(e);
       } finally {
@@ -53,135 +53,85 @@ export default function StartScreen() {
     <ImageBackground
       source={require("../assets/background.png")}
       resizeMode="cover"
-      imageStyle={{ opacity: 0.2 }}
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+      style={styles.backgroundImage}
     >
       <LinearGradient
-        colors={["#059668", "transparent"]}
-        start={{ x: 0, y: -0.6 }}
-        style={{ flex: 1, width: "100%", paddingHorizontal: 12 }}
+        colors={["transparent", "rgba(0,0,0,0.8)", "#000000"]}
+        locations={[0, 0.5, 1]}
+        style={styles.gradient}
       >
-        <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
           <View style={styles.content}>
-            <View style={styles.header}>
-              <View style={styles.logoContainer}>
-                <Text style={styles.title}>IFPlan</Text>
-                <Text style={styles.subtitle}>Leite à Pasto</Text>
-              </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.headlineText}>Mais Lucro,</Text>
+              <Text style={styles.headlineText}>Visão Real e</Text>
+              <Text style={[styles.headlineText, styles.highlightText]}>
+                Zero Perdas
+              </Text>
 
               <Text style={styles.description}>
-                O IFPlan ajuda pequenos produtores de leite a realizarem
-                simulações e análises sobre produtividade, custos e
-                lucratividade baseados em dados reais da propriedade.
+                O IFPlan ajuda pequenos produtores a realizarem simulações e
+                análises sobre lucratividade baseados em dados reais da
+                propriedade.
               </Text>
             </View>
 
-            <TouchableOpacity
-              style={styles.button}
+            <Button
+              title="Iniciar"
               onPress={() => router.replace("/dashboard")}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.buttonText}>Começar Agora</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.footer}>
-            <Image
-              source={require("../assets/lapis.png")}
-              style={styles.logo}
-              resizeMode="contain"
-              borderRadius={8}
+              style={styles.button}
+              icon="arrow-forward"
+              iconSide="right"
             />
-
-            <Text style={styles.privacyPolicy}>Políticas e privacidade</Text>
           </View>
-        </View>
+        </SafeAreaView>
       </LinearGradient>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
-    justifyContent: "center",
+    width: "100%",
+    height: "100%",
+  },
+  gradient: {
+    flex: 1,
+    width: "100%",
+  },
+  safeArea: {
+    flex: 1,
   },
   content: {
     flex: 1,
-    justifyContent: "space-between",
-    padding: 32,
-    paddingTop: 100,
-    paddingBottom: 60,
+    justifyContent: "flex-end",
+    paddingHorizontal: 32,
+    paddingBottom: 40,
   },
-  header: {
-    alignItems: "center",
+  textContainer: {
+    marginBottom: 40,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: "#fff",
+  headlineText: {
+    fontSize: 48,
+    fontWeight: "900",
+    color: "#FFFFFF",
+    lineHeight: 52,
     letterSpacing: -1,
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#fff",
-    fontWeight: "600",
+  highlightText: {
+    color: theme.colors.primary,
   },
   description: {
-    fontSize: 14,
-    color: "#000000",
-    textAlign: "center",
-    fontWeight: "600",
-    lineHeight: 26,
-  },
-  illustrationContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-  },
-  circle: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
+    fontSize: 16,
+    color: "#A0A0A0",
+    marginTop: 20,
+    lineHeight: 24,
+    fontWeight: "400",
   },
   button: {
-    backgroundColor: theme.colors.surface,
-    paddingVertical: 20,
-    borderRadius: theme.borderRadius.lg,
-    alignItems: "center",
-    ...theme.shadows.md,
-  },
-  buttonText: {
-    color: theme.colors.primary,
-    fontSize: theme.typography.sizes.lg,
-    fontWeight: theme.typography.weights.bold as any,
-  },
-  footer: {
-    justifyContent: "flex-end",
-    width: "100%",
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginBottom: 24,
-    backgroundColor: "#0a642b2a",
-    padding: 16,
-    borderRadius: 16,
-  },
-  logo: {
-    width: "auto",
-    height: 40,
-    marginBottom: 12,
-  },
-  privacyPolicy: {
-    fontSize: 12,
-    color: "#fff",
-    textAlign: "center",
-    marginTop: 8,
+    height: 56,
+    borderRadius: 30,
+    marginBottom: 30,
   },
 });

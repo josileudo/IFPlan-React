@@ -1,9 +1,11 @@
-export const theme = {
+import { useColorScheme } from "react-native";
+
+export const lightTheme = {
   colors: {
     primary: "#059669",
     primaryDark: "#047857",
     secondary: "#10b981",
-    background: "#F9FAFB",
+    background: "#F8FAFC",
     surface: "#ffffff",
     text: {
       primary: "#1e293b",
@@ -73,3 +75,53 @@ export const theme = {
     },
   },
 };
+
+export const darkTheme = {
+  ...lightTheme,
+  colors: {
+    primary: "#10b981",
+    primaryDark: "#059669",
+    secondary: "#34d399",
+    background: "#0f172a",
+    surface: "#1e293b",
+    text: {
+      primary: "#f8fafc",
+      secondary: "#cbd5e1",
+      placeholder: "#64748b",
+      light: "#ffffff",
+    },
+    border: "#334155",
+    error: "#f87171",
+    success: "#4ade80",
+    warning: "#facc15",
+    disabled: "#334155",
+  },
+  shadows: {
+    ...lightTheme.shadows,
+    lg: {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.6,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+  }
+};
+
+// Retro-compatibility para componentes que ainda usam o theme diretamente
+export const theme = lightTheme;
+
+export function useTheme() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  
+  return {
+    isDark,
+    theme: isDark ? darkTheme : lightTheme,
+    colors: isDark ? darkTheme.colors : lightTheme.colors,
+    spacing: lightTheme.spacing,
+    borderRadius: lightTheme.borderRadius,
+    typography: lightTheme.typography,
+    shadows: isDark ? darkTheme.shadows : lightTheme.shadows,
+  };
+}
