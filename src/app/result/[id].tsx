@@ -7,6 +7,7 @@ import {
   Alert,
   StyleProp,
   ViewStyle,
+  TextStyle,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
@@ -15,7 +16,7 @@ import { calculateSimulation } from "../../utils/formulas";
 import { SimulationInput, SimulationOutput } from "../../types";
 import { SliderModal } from "../../components/SliderModal";
 import { MaterialIcons } from "@expo/vector-icons";
-import { theme } from "@/utils/theme";
+import { useTheme } from "@/utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function ResultRow({
@@ -29,8 +30,9 @@ function ResultRow({
   value: number | null;
   unit?: string;
   digits?: number;
-  itemStyle?: StyleProp<ViewStyle>;
+  itemStyle?: StyleProp<TextStyle>;
 }) {
+  const { colors, typography } = useTheme();
   const displayValue =
     value !== null
       ? value.toLocaleString("pt-BR", {
@@ -40,11 +42,11 @@ function ResultRow({
       : "-";
 
   return (
-    <View style={[styles.row]}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={[styles.value, itemStyle]}>
+    <View style={styles.row}>
+      <Text style={[styles.label, { color: colors.text.secondary }]}>{label}</Text>
+      <Text style={[styles.value, { color: colors.text.primary }, itemStyle]}>
         {displayValue}{" "}
-        {unit && <Text style={[styles.unit, itemStyle]}>{unit}</Text>}
+        {unit && <Text style={[styles.unit, { color: colors.text.placeholder }, itemStyle]}>{unit}</Text>}
       </Text>
     </View>
   );
@@ -59,11 +61,12 @@ function Section({
   children: React.ReactNode;
   icon: keyof typeof MaterialIcons.glyphMap;
 }) {
+  const { colors, spacing, borderRadius } = useTheme();
   return (
-    <View style={styles.section}>
+    <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border, padding: spacing.md, borderRadius: borderRadius.lg }]}>
       <View style={styles.sectionHeader}>
-        <MaterialIcons name={icon} size={22} color={theme.colors.primary} />
-        <Text style={styles.sectionTitle}>{title}</Text>
+        <MaterialIcons name={icon} size={22} color={colors.primary} />
+        <Text style={[styles.sectionTitle, { color: colors.primary, borderBottomColor: colors.border }]}>{title}</Text>
       </View>
       {children}
     </View>
@@ -75,6 +78,7 @@ export default function ResultScreen() {
   const router = useRouter();
   const { getSimulation, updateSimulation } = useStore();
   const insets = useSafeAreaInsets();
+  const { colors, spacing } = useTheme();
 
   const originalSim = getSimulation(id!);
   const [currentInputs, setCurrentInputs] = useState<SimulationInput | null>(
@@ -109,36 +113,36 @@ export default function ResultScreen() {
       if (!hasResultChanged) return {};
 
       return oldResults?.[item] < results?.[item]
-        ? styles.positiveChangeItem
-        : styles.negativeChangeItem;
+        ? { color: colors.success }
+        : { color: colors.error };
     },
-    [results, oldResults],
+    [results, oldResults, colors],
   );
 
   const handleSave = () => {
     if (currentInputs && id) {
       updateSimulation(id, currentInputs);
       Alert.alert("Sucesso", "Alterações salvas.");
-      router.back(); // Or stay? Prompt says "ao salvar volta para a tela de dashboard".
+      router.back();
     }
   };
 
   const handleEdit = () => {
-    router.push(`/simulation?id=${id}`);
+    router.replace(`/simulation?id=${id}`);
   };
 
   if (!results || !currentInputs) {
     return (
-      <View style={styles.container}>
-        <Text>Carregando...</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Text style={{ color: colors.text.primary, margin: spacing.lg }}>Carregando...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { padding: spacing.md, gap: spacing.lg }]}
         showsVerticalScrollIndicator={false}
       >
         {/* MARK: Resumo Produtivo */}
@@ -210,12 +214,6 @@ export default function ResultScreen() {
             digits={3}
             itemStyle={applyColorByItemChanged("ml")}
           />
-          {/* <ResultRow
-            label="Lucro anual (ML Anual)"
-            value={results.mlAnual}
-            unit="R$"
-            itemStyle={applyColorByItemChanged("mlAnual")}
-          /> */}
           <ResultRow
             label="Rentabilidade (TRCI)"
             value={results.trci}
@@ -288,25 +286,25 @@ export default function ResultScreen() {
       </ScrollView>
 
       <View
-        style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}
+        style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16), backgroundColor: colors.surface, borderTopColor: colors.border }]}
       >
         {hasChanges ? (
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.footerButtonText}>Salvar Alterações</Text>
+          <TouchableOpacity style={[styles.saveButton, { backgroundColor: colors.primary }]} onPress={handleSave}>
+            <Text style={[styles.footerButtonText, { color: colors.surface }]}>Salvar Alterações</Text>
           </TouchableOpacity>
         ) : (
           <>
             <TouchableOpacity
-              style={styles.secondaryButton}
+              style={[styles.secondaryButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
               onPress={handleEdit}
             >
-              <Text style={styles.secondaryButtonText}>Editar</Text>
+              <Text style={[styles.secondaryButtonText, { color: colors.text.primary }]}>Editar</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.primaryButton}
+              style={[styles.primaryButton, { backgroundColor: colors.primary }]}
               onPress={() => setSliderVisible(true)}
             >
-              <Text style={styles.footerButtonText}>Sensibilidade</Text>
+              <Text style={[styles.footerButtonText, { color: colors.surface }]}>Sensibilidade</Text>
             </TouchableOpacity>
           </>
         )}
@@ -325,7 +323,6 @@ export default function ResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -335,23 +332,15 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   content: {
-    padding: theme.spacing.md,
     paddingBottom: 100,
-    gap: theme.spacing.lg,
   },
   section: {
-    backgroundColor: theme.colors.surface,
-    padding: theme.spacing.md,
     borderWidth: 1,
-    borderRadius: theme.borderRadius.lg,
-    borderColor: theme.colors.border,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#059669",
     borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
   },
   row: {
     flexDirection: "row",
@@ -360,17 +349,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: "#64748b",
     flex: 1,
   },
   value: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1e293b",
   },
   unit: {
     fontSize: 12,
-    color: "#94a3b8",
     fontWeight: "400",
   },
   footer: {
@@ -378,50 +364,36 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
     flexDirection: "row",
     gap: 16,
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: "#059669",
-    paddingVertical: 14, // Reduced padding
+    paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },
   secondaryButton: {
     flex: 1,
-    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: "#cbd5e1",
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },
   saveButton: {
     flex: 1,
-    backgroundColor: "#059669",
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },
   footerButtonText: {
-    color: "#fff",
     fontWeight: "700",
     fontSize: 16,
   },
   secondaryButtonText: {
-    color: "#334155",
     fontWeight: "600",
     fontSize: 16,
-  },
-  positiveChangeItem: {
-    color: "#059669",
-  },
-  negativeChangeItem: {
-    color: "#dc2626",
   },
 });

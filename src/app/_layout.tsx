@@ -74,9 +74,11 @@ function LayoutContent() {
     }
   };
 
+  const { isDark } = useTheme();
+
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar style="dark" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <Stack
         screenOptions={{
           headerStyle: {

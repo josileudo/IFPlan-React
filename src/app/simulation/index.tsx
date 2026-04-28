@@ -86,7 +86,10 @@ export default function SimulationScreen() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      if (isSavingRef.current || (!isDirty && !isEditing)) {
+      if (isSavingRef.current) {
+        return;
+      }
+      if (!isDirty) {
         return;
       }
       e.preventDefault();

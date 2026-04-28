@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View, Dimensions } from "react-native";
 import { useToast, ToastType } from "@/contexts/ToastContext";
-import { theme } from "@/utils/theme";
+import { useTheme } from "@/utils/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
 export const Toast = () => {
   const { toast } = useToast();
+  const { colors, spacing, borderRadius, typography, shadows } = useTheme();
   const [show, setShow] = React.useState(toast.visible);
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-100)).current;
@@ -65,14 +66,14 @@ export const Toast = () => {
   const getBackgroundColor = (type: ToastType) => {
     switch (type) {
       case "success":
-        return theme.colors.success;
+        return colors.success;
       case "error":
-        return theme.colors.error;
+        return colors.error;
       case "alert":
-        return theme.colors.warning;
+        return colors.warning;
       case "info":
       default:
-        return theme.colors.primary;
+        return colors.primary;
     }
   };
 
@@ -84,11 +85,16 @@ export const Toast = () => {
           opacity,
           transform: [{ translateY }],
           backgroundColor: getBackgroundColor(toast.type),
+          padding: spacing.md,
+          borderRadius: borderRadius.md,
+          ...shadows.md,
         },
       ]}
     >
       <MaterialIcons name={getIcon(toast.type)} size={24} color="#FFF" />
-      <Text style={styles.message}>{toast.message}</Text>
+      <Text style={[styles.message, { fontSize: typography.sizes.sm, fontWeight: typography.weights.semibold as any, marginLeft: spacing.sm }]}>
+        {toast.message}
+      </Text>
     </Animated.View>
   );
 };
@@ -99,18 +105,12 @@ const styles = StyleSheet.create({
     top: 0,
     left: 20,
     right: 20,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.md,
     flexDirection: "row",
     alignItems: "center",
     zIndex: 9999,
-    ...theme.shadows.md,
   },
   message: {
     color: "#FFF",
-    fontSize: theme.typography.sizes.sm,
-    fontWeight: theme.typography.weights.semibold,
-    marginLeft: theme.spacing.sm,
     flex: 1,
   },
 });

@@ -1,16 +1,17 @@
 import { ActivityIndicator, Modal, StyleSheet, Text, View } from "react-native";
-import { theme } from "@/utils/theme";
+import { useTheme } from "@/utils/theme";
 import { useLoading } from "@/contexts/LoadingContext";
 
 export const Loading = () => {
   const { isLoading } = useLoading();
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
 
   return (
     <Modal visible={isLoading} transparent animationType="fade">
       <View style={styles.container}>
-        <View style={styles.card}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.title}>Carregando...</Text>
+        <View style={[styles.card, { backgroundColor: colors.surface, padding: spacing.xl, borderRadius: borderRadius.lg, ...shadows.md }]}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.title, { color: colors.text.primary, fontSize: typography.sizes.md, fontWeight: typography.weights.bold as any, marginTop: spacing.md }]}>Carregando...</Text>
         </View>
       </View>
     </Modal>
@@ -25,15 +26,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   card: {
-    backgroundColor: theme.colors.surface,
-    padding: theme.spacing.xl,
-    borderRadius: theme.borderRadius.lg,
-    ...theme.shadows.md,
+    alignItems: "center",
+    justifyContent: "center",
   },
   title: {
-    fontSize: theme.typography.sizes.md,
-    fontWeight: theme.typography.weights.bold,
-    color: theme.colors.text.primary,
-    marginTop: theme.spacing.md,
+    textAlign: "center",
   },
 });
