@@ -140,9 +140,9 @@ export const Button = ({
 
 const styles = StyleSheet.create({
   container: {
-    height: 48,
+    height: 56,
     width: "100%",
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   text: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
   },
 });

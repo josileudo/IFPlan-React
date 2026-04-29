@@ -8,6 +8,7 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
@@ -286,7 +287,7 @@ export default function ResultScreen() {
       </ScrollView>
 
       <View
-        style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16), backgroundColor: colors.surface, borderTopColor: colors.border }]}
+        style={[styles.footer, { paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 32) + 16 : Math.max(insets.bottom, 16), backgroundColor: colors.surface, borderTopColor: colors.border }]}
       >
         {hasChanges ? (
           <TouchableOpacity style={[styles.saveButton, { backgroundColor: colors.primary }]} onPress={handleSave}>

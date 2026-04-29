@@ -658,7 +658,7 @@ export default function SimulationScreen() {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
             padding: spacing.lg,
-            paddingBottom: Math.max(insets.bottom, spacing.lg),
+            paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 32) + spacing.lg : Math.max(insets.bottom, spacing.lg),
           },
         ]}
       >

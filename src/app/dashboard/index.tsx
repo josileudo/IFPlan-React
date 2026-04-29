@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   TextInput,
+  Platform,
 } from "react-native";
 import { useTheme } from "@/utils/theme";
 import { useRouter } from "expo-router";
@@ -160,7 +161,7 @@ export default function Dashboard() {
         }
       />
 
-      <View style={[styles.fabContainer, { bottom: Math.max(insets.bottom, 16) + 16 }]}>
+      <View style={[styles.fabContainer, { bottom: Platform.OS === 'android' ? Math.max(insets.bottom, 32) + 16 : Math.max(insets.bottom, 16) + 16 }]}>
         <AnimatedButton
           style={[styles.fab, { backgroundColor: colors.primary }]}
           onPress={() => router.push("/simulation")}

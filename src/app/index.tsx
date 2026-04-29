@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageBackground,
+  Platform,
 } from "react-native";
 import { useRouter, Redirect } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,7 +13,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
 import { Button } from "@/components/Button";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,6 +21,7 @@ export default function StartScreen() {
   const router = useRouter();
   const [appIsReady, setAppIsReady] = useState(false);
   const { hasSeenOnboarding } = useStore();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     async function prepare() {
@@ -61,7 +63,7 @@ export default function StartScreen() {
         style={styles.gradient}
       >
         <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
-          <View style={styles.content}>
+          <View style={[styles.content, { paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 32) + 16 : 40 }]}>
             <View style={styles.textContainer}>
               <Text style={styles.headlineText}>Mais Lucro,</Text>
               <Text style={styles.headlineText}>Visão Real e</Text>
@@ -107,7 +109,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     paddingHorizontal: 32,
-    paddingBottom: 40,
   },
   textContainer: {
     marginBottom: 40,
