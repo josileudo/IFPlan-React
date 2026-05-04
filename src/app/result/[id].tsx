@@ -44,10 +44,18 @@ function ResultRow({
 
   return (
     <View style={styles.row}>
-      <Text style={[styles.label, { color: colors.text.secondary }]}>{label}</Text>
+      <Text style={[styles.label, { color: colors.text.secondary }]}>
+        {label}
+      </Text>
       <Text style={[styles.value, { color: colors.text.primary }, itemStyle]}>
         {displayValue}{" "}
-        {unit && <Text style={[styles.unit, { color: colors.text.placeholder }, itemStyle]}>{unit}</Text>}
+        {unit && (
+          <Text
+            style={[styles.unit, { color: colors.text.placeholder }, itemStyle]}
+          >
+            {unit}
+          </Text>
+        )}
       </Text>
     </View>
   );
@@ -64,10 +72,27 @@ function Section({
 }) {
   const { colors, spacing, borderRadius } = useTheme();
   return (
-    <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border, padding: spacing.md, borderRadius: borderRadius.lg }]}>
+    <View
+      style={[
+        styles.section,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          padding: spacing.md,
+          borderRadius: borderRadius.lg,
+        },
+      ]}
+    >
       <View style={styles.sectionHeader}>
         <MaterialIcons name={icon} size={22} color={colors.primary} />
-        <Text style={[styles.sectionTitle, { color: colors.primary, borderBottomColor: colors.border }]}>{title}</Text>
+        <Text
+          style={[
+            styles.sectionTitle,
+            { color: colors.primary, borderBottomColor: colors.border },
+          ]}
+        >
+          {title}
+        </Text>
       </View>
       {children}
     </View>
@@ -135,7 +160,9 @@ export default function ResultScreen() {
   if (!results || !currentInputs) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Text style={{ color: colors.text.primary, margin: spacing.lg }}>Carregando...</Text>
+        <Text style={{ color: colors.text.primary, margin: spacing.lg }}>
+          Carregando...
+        </Text>
       </View>
     );
   }
@@ -143,7 +170,10 @@ export default function ResultScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
-        contentContainerStyle={[styles.content, { padding: spacing.md, gap: spacing.lg }]}
+        contentContainerStyle={[
+          styles.content,
+          { padding: spacing.md, gap: spacing.lg },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {/* MARK: Resumo Produtivo */}
@@ -190,13 +220,7 @@ export default function ResultScreen() {
             digits={1}
             itemStyle={applyColorByItemChanged("taxaDeLotacao")}
           />
-          <ResultRow
-            label="DPL"
-            value={results.dpl}
-            unit="L/vaca/dia"
-            digits={1}
-            itemStyle={applyColorByItemChanged("dpl")}
-          />
+
           <ResultRow
             label="Tensão da água no solo"
             value={results.tensaoDaAguaNoSolo}
@@ -260,6 +284,13 @@ export default function ResultScreen() {
 
         {/* MARK: Ambiente e Estresse */}
         <Section title="Ambiente e Estresse" icon="eco">
+          <ResultRow
+            label="DPL"
+            value={results.dpl}
+            unit="L/vaca/dia"
+            digits={1}
+            itemStyle={applyColorByItemChanged("dpl")}
+          />
           <ResultRow label="ITU" value={results.itu} digits={1} />
           <ResultRow
             label="Perda Receita (Estresse)"
@@ -274,38 +305,63 @@ export default function ResultScreen() {
             digits={1}
             itemStyle={applyColorByItemChanged("pegadaHidrica")}
           />
-          <ResultRow
-            label="Perda de produção"
-            value={results.producaoDeLeiteHaDia}
-            unit="L/vaca/dia"
-            digits={1}
-            itemStyle={applyColorByItemChanged("producaoDeLeiteHaDia")}
-          />
         </Section>
 
         <View style={{ height: 40 }} />
       </ScrollView>
 
       <View
-        style={[styles.footer, { paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 32) + 16 : Math.max(insets.bottom, 16), backgroundColor: colors.surface, borderTopColor: colors.border }]}
+        style={[
+          styles.footer,
+          {
+            paddingBottom:
+              Platform.OS === "android"
+                ? Math.max(insets.bottom, 32) + 16
+                : Math.max(insets.bottom, 16),
+            backgroundColor: colors.surface,
+            borderTopColor: colors.border,
+          },
+        ]}
       >
         {hasChanges ? (
-          <TouchableOpacity style={[styles.saveButton, { backgroundColor: colors.primary }]} onPress={handleSave}>
-            <Text style={[styles.footerButtonText, { color: colors.surface }]}>Salvar Alterações</Text>
+          <TouchableOpacity
+            style={[styles.saveButton, { backgroundColor: colors.primary }]}
+            onPress={handleSave}
+          >
+            <Text style={[styles.footerButtonText, { color: colors.surface }]}>
+              Salvar Alterações
+            </Text>
           </TouchableOpacity>
         ) : (
           <>
             <TouchableOpacity
-              style={[styles.secondaryButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              style={[
+                styles.secondaryButton,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
               onPress={handleEdit}
             >
-              <Text style={[styles.secondaryButtonText, { color: colors.text.primary }]}>Editar</Text>
+              <Text
+                style={[
+                  styles.secondaryButtonText,
+                  { color: colors.text.primary },
+                ]}
+              >
+                Editar
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.primaryButton, { backgroundColor: colors.primary }]}
+              style={[
+                styles.primaryButton,
+                { backgroundColor: colors.primary },
+              ]}
               onPress={() => setSliderVisible(true)}
             >
-              <Text style={[styles.footerButtonText, { color: colors.surface }]}>Sensibilidade</Text>
+              <Text
+                style={[styles.footerButtonText, { color: colors.surface }]}
+              >
+                Sensibilidade
+              </Text>
             </TouchableOpacity>
           </>
         )}
