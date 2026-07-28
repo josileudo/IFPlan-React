@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "IFPlan",
+    "name": "IFPlan Leite à Pasto",
     "slug": "ifplan-leite-a-pasto",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "icon": "./src/assets/icon.png",
     "splash": {
       "image": "./src/assets/ios-icon.png",
@@ -62,12 +62,12 @@
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "16.4"
           },
           "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            "buildToolsVersion": "35.0.0"
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 31,
+            "buildToolsVersion": "31.0.0"
           }
         }
       ]

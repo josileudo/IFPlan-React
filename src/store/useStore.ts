@@ -2,14 +2,18 @@ import { create } from "zustand";
 import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
 import { Simulation, SimulationInput, SimulationOutput } from "../types";
 import { calculateSimulation } from "../utils/formulas";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV, MMKV } from "react-native-mmkv";
 
-const storage = new MMKV();
+// Create MMKV instance
+const storage = createMMKV({
+  id: "ifplan-storage",
+  encryptionKey: "your-encryption-key-here", // Optional: Add encryption for better security
+});
 
 const zustandStorage: StateStorage = {
   setItem: (name, value) => storage.set(name, value),
   getItem: (name) => storage.getString(name) ?? null,
-  removeItem: (name) => storage.delete(name),
+  removeItem: (name) => storage.remove(name),
 };
 
 interface StoreState {
@@ -18,13 +22,13 @@ interface StoreState {
   addSimulation: (
     name: string,
     description: string,
-    input: SimulationInput
+    input: SimulationInput,
   ) => void;
   updateSimulation: (id: string, input: SimulationInput) => void;
   updateSimulationDetails: (
     id: string,
     name: string,
-    description: string
+    description: string,
   ) => void;
   deleteSimulation: (id: string) => void;
   getSimulation: (id: string) => Simulation | undefined;
@@ -55,14 +59,14 @@ export const useStore = create<StoreState>()(
         const results = calculateSimulation(input);
         set((state) => ({
           simulations: state.simulations.map((sim) =>
-            sim.id === id ? { ...sim, inputs: input, results } : sim
+            sim.id === id ? { ...sim, inputs: input, results } : sim,
           ),
         }));
       },
       updateSimulationDetails: (id, name, description) => {
         set((state) => ({
           simulations: state.simulations.map((sim) =>
-            sim.id === id ? { ...sim, name, description } : sim
+            sim.id === id ? { ...sim, name, description } : sim,
           ),
         }));
       },
@@ -77,6 +81,6 @@ export const useStore = create<StoreState>()(
     {
       name: "ifplan-storage",
       storage: createJSONStorage(() => zustandStorage),
-    }
-  )
+    },
+  ),
 );
