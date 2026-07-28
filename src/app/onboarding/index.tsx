@@ -1,10 +1,11 @@
 import React, { useRef, useState } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, Platform } from "react-native";
 import LottieView from "lottie-react-native";
 import { useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
 import { theme } from "@/utils/theme";
 import { Button } from "@/components/Button";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -38,6 +39,7 @@ export default function OnboardingScreen() {
   const { completeOnboarding } = useStore();
   const [currentStep, setCurrentStep] = useState(0);
   const lottieRef = useRef<LottieView>(null);
+  const insets = useSafeAreaInsets();
 
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {
@@ -84,7 +86,7 @@ export default function OnboardingScreen() {
         </View>
       </View>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 32) + 16 : Math.max(insets.bottom, 16) }]}>
         <View style={styles.buttonContainer}>
           {currentStep > 0 && (
             <Button
@@ -165,6 +167,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: theme.spacing.xl,
+    paddingBottom: 0,
   },
   buttonContainer: {
     flexDirection: "row",

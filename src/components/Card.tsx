@@ -1,4 +1,4 @@
-import { theme } from "@/utils/theme";
+import { useTheme } from "@/utils/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
@@ -17,6 +17,8 @@ export function Card({
   onPress,
   onDelete,
 }: CardProps) {
+  const { colors, typography, spacing, borderRadius } = useTheme();
+
   const formattedDate = new Date(date).toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "short",
@@ -24,68 +26,76 @@ export function Card({
   });
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.card} activeOpacity={0.8}>
+    <TouchableOpacity 
+      onPress={onPress} 
+      style={[
+        styles.card, 
+        { 
+          backgroundColor: colors.surface, 
+          borderColor: colors.border,
+          borderRadius: borderRadius.lg,
+          padding: spacing.md,
+          marginBottom: spacing.md,
+        }
+      ]} 
+      activeOpacity={0.8}
+    >
       <View style={styles.header}>
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={[styles.title, { color: colors.text.primary, fontSize: typography.sizes.lg, fontWeight: "700" }]} numberOfLines={1}>
           {title}
         </Text>
         <TouchableOpacity
-          style={styles.deleteButton}
+          style={[styles.deleteButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
           onPress={onDelete}
-          activeOpacity={0.8}
+          activeOpacity={0.6}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <MaterialIcons name="delete" size={20} color={theme.colors.error} />
+          <MaterialIcons name="delete-outline" size={18} color={colors.error} />
         </TouchableOpacity>
       </View>
+      
       {description && (
-        <Text style={styles.description} numberOfLines={2}>
+        <Text style={[styles.description, { color: colors.text.secondary, fontSize: typography.sizes.sm, marginBottom: spacing.sm }]} numberOfLines={2}>
           {description}
         </Text>
       )}
-      <Text style={styles.date}>{formattedDate}</Text>
+      
+      <Text style={[styles.date, { color: colors.text.placeholder, fontSize: typography.sizes.xs }]}>
+        {formattedDate}
+      </Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    ...theme.shadows.sm,
     borderWidth: 1,
-    borderColor: theme.colors.border,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: theme.spacing.sm,
+    alignItems: "flex-start",
+    marginBottom: 8,
   },
   title: {
-    fontSize: theme.typography.sizes.lg,
-    fontWeight: theme.typography.weights.bold,
-    color: theme.colors.text.primary,
     flex: 1,
-    marginRight: theme.spacing.sm,
-  },
-  date: {
-    fontSize: theme.typography.sizes.xs,
-    color: theme.colors.text.placeholder,
-    fontWeight: theme.typography.weights.medium,
+    marginRight: 12,
   },
   description: {
-    fontSize: theme.typography.sizes.sm,
-    color: theme.colors.text.secondary,
     lineHeight: 20,
-    marginBottom: theme.spacing.sm,
+  },
+  date: {
+    fontWeight: "500",
+    marginTop: 4,
   },
   deleteButton: {
-    backgroundColor: "#f5e7e2",
-    padding: 4,
-    borderRadius: 50,
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 6,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+    borderWidth: StyleSheet.hairlineWidth,
   },
 });

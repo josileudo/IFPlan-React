@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "IFPlan",
+    "name": "IFPlan Leite à Pasto",
     "slug": "ifplan-leite-a-pasto",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "icon": "./src/assets/icon.png",
     "splash": {
       "image": "./src/assets/ios-icon.png",
@@ -40,7 +40,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-asset",
+      "./plugins/withAndroidRestrictions.js",
       [
         "expo-splash-screen",
         {
@@ -50,10 +50,24 @@
         }
       ],
       [
+        "react-native-edge-to-edge",
+        {
+          "android": {
+            "parentTheme": "Default",
+            "enforceNavigationBarContrast": false
+          }
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "16.4"
+          },
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 31,
+            "buildToolsVersion": "31.0.0"
           }
         }
       ]

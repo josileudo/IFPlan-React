@@ -1,14 +1,22 @@
-import { theme } from "@/utils/theme";
 import { useStore } from "@/store/useStore";
-import { exportCsvAndShare } from "@/utils/exportCSV";
+import { exportPdfAndShare } from "@/utils/exportCSV";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Stack, useGlobalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "@/utils/theme";
+import { Simulation } from "@/types";
+import { Loading } from "@/components/Loading";
+import { LoadingProvider, useLoading } from "@/contexts/LoadingContext";
+import { ToastProvider, useToast } from "@/contexts/ToastContext";
+import { Toast } from "@/components/Toast";
 
-export default function Layout() {
+function LayoutContent() {
   const { clearSimulations, getSimulation, simulations } = useStore();
+  const { setIsLoading } = useLoading();
+  const { showToast } = useToast();
   const { id } = useGlobalSearchParams();
+  const theme = useTheme();
 
   const handleClearSimulations = () => {
     Alert.alert(
@@ -22,10 +30,15 @@ export default function Layout() {
         },
         {
           text: "Excluir",
-          onPress: () => clearSimulations(),
+          onPress: () => {
+            setIsLoading(true);
+            clearSimulations();
+            showToast("Todas as simulações foram excluídas", "success");
+            setIsLoading(false);
+          },
           style: "destructive",
         },
-      ]
+      ],
     );
   };
 
@@ -34,33 +47,38 @@ export default function Layout() {
     const simulation = getSimulation(id);
 
     if (!simulation) {
-      Alert.alert("Erro", "Simulação não encontrada para exportação.");
+      showToast("Simulação não encontrada para exportação.", "error");
       return;
     }
 
-    const flattened = {
+    const flattened: Simulation = {
       id: simulation.id,
       name: simulation.name,
       description: simulation.description,
       date: simulation.date,
-      ...simulation.inputs,
-      ...simulation.results,
+      inputs: simulation.inputs,
+      results: simulation.results,
     };
 
     try {
-      await exportCsvAndShare(
-        [flattened],
-        `simulation-${simulation.name || "sem-nome"}.csv`
+      setIsLoading(true);
+      await exportPdfAndShare(
+        flattened,
+        `simulation-${simulation.name || "sem-nome"}.pdf`,
       );
-      Alert.alert("Sucesso", "CSV exportado com sucesso.");
+      showToast("PDF exportado com sucesso!", "success");
     } catch (error) {
-      Alert.alert("Erro", "Falha ao exportar CSV.");
+      showToast("Falha ao exportar PDF.", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const { isDark } = useTheme();
+
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar style="dark" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <Stack
         screenOptions={{
           headerStyle: {
@@ -110,7 +128,7 @@ export default function Layout() {
             headerRight: () => (
               <TouchableOpacity onPress={handleExport}>
                 <MaterialIcons
-                  name="download"
+                  name="file-download"
                   size={24}
                   color={theme.colors.primary}
                 />
@@ -129,6 +147,18 @@ export default function Layout() {
           }}
         />
       </Stack>
+      <Loading />
+      <Toast />
     </View>
+  );
+}
+
+export default function Layout() {
+  return (
+    <LoadingProvider>
+      <ToastProvider>
+        <LayoutContent />
+      </ToastProvider>
+    </LoadingProvider>
   );
 }

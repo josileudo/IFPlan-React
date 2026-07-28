@@ -11,6 +11,8 @@ O **IFPlan Leite à Pasto** é uma solução móvel completa voltada para pequen
 
 ## Principais Funcionalidades
 
+- **Suporte a Dark Mode**: Interface adaptativa que respeita a preferência de tema do sistema (Claro/Escuro).
+- **Design Moderno e Minimalista**: Experiência visual premium com foco em legibilidade e usabilidade.
 - **Simulações Multidimensionais**: Avaliação de fatores climáticos (temperatura, chuva, umidade), solo, rebanho e gestão econômica.
 - **Histórico de Simulações**: Painel intuitivo para gerenciar e comparar diferentes cenários salvos.
 - **Fluxo de Onboarding**: Guia inicial para novos usuários entenderem o potencial da ferramenta.

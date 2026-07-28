@@ -9,6 +9,9 @@ import {
 import Slider from "@react-native-community/slider";
 import { useState, useEffect, useMemo } from "react";
 import { SimulationInput } from "../types";
+import { useTheme } from "@/utils/theme";
+import * as Haptics from "expo-haptics";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface SliderModalProps {
   visible: boolean;
@@ -34,34 +37,82 @@ function SliderItem({
   max = 200,
   step = 1,
 }: SliderItemProps) {
+  const { colors } = useTheme();
+
   const negativeAndPositiveValue = useMemo(() => {
     if (value <= 100) return (value / 100) * 100 - 100;
     return value - 100;
   }, [value]);
 
+  const handleDecrease = () => {
+    if (value > min) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onValueChange(value - step);
+    }
+  };
+
+  const handleIncrease = () => {
+    if (value < max) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onValueChange(value + step);
+    }
+  };
+
+  const handleSliderChange = (val: number) => {
+    onValueChange(val);
+  };
+
   return (
     <View style={styles.sliderContainer}>
       <View style={styles.labelRow}>
-        <Text style={styles.sliderLabel}>{label}</Text>
+        <Text style={[styles.sliderLabel, { color: colors.text.primary }]}>
+          {label}
+        </Text>
         <Text
           style={[
             styles.sliderValue,
-            { color: negativeAndPositiveValue < 0 ? "#DC0000" : "#059669" },
+            {
+              color:
+                negativeAndPositiveValue < 0 ? colors.error : colors.success,
+            },
           ]}
         >
           {negativeAndPositiveValue.toFixed(0)}%
         </Text>
       </View>
-      <Slider
-        style={{ width: "100%", height: 40 }}
-        minimumValue={min}
-        maximumValue={max}
-        step={step}
-        value={value}
-        onValueChange={onValueChange}
-        maximumTrackTintColor="#059669"
-        thumbTintColor="#059669"
-      />
+
+      <View style={styles.sliderControlRow}>
+        <TouchableOpacity
+          onPress={handleDecrease}
+          style={[styles.iconButton, { backgroundColor: colors.background }]}
+        >
+          <MaterialIcons
+            name="remove"
+            size={24}
+            color={colors.text.secondary}
+          />
+        </TouchableOpacity>
+
+        <Slider
+          style={{ flex: 1, height: 40, marginHorizontal: 8 }}
+          minimumValue={min}
+          maximumValue={max}
+          step={step}
+          value={value}
+          onValueChange={handleSliderChange}
+          onSlidingComplete={() => Haptics.selectionAsync()}
+          maximumTrackTintColor={colors.border}
+          minimumTrackTintColor={colors.primary}
+          thumbTintColor={colors.primary}
+        />
+
+        <TouchableOpacity
+          onPress={handleIncrease}
+          style={[styles.iconButton, { backgroundColor: colors.background }]}
+        >
+          <MaterialIcons name="add" size={24} color={colors.text.secondary} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -72,6 +123,7 @@ export function SliderModal({
   currentInputs,
   onApply,
 }: SliderModalProps) {
+  const { colors, borderRadius } = useTheme();
   const [vars, setVars] = useState({
     varCOE: 100,
     varDPL: 100,
@@ -82,6 +134,7 @@ export function SliderModal({
 
   useEffect(() => {
     if (visible) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setVars({
         varCOE: (currentInputs.varCOE || 1) * 100,
         varDPL: (currentInputs.varDPL || 1) * 100,
@@ -93,6 +146,7 @@ export function SliderModal({
   }, [visible, currentInputs]);
 
   const handleApply = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onApply({
       ...currentInputs,
       varCOE: vars.varCOE / 100,
@@ -111,13 +165,24 @@ export function SliderModal({
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.overlay}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Ajustes de Sensibilidade</Text>
-          <Text style={styles.subtitle}>
+        <View
+          style={[
+            styles.content,
+            {
+              backgroundColor: colors.surface,
+              borderTopLeftRadius: borderRadius.xl,
+              borderTopRightRadius: borderRadius.xl,
+            },
+          ]}
+        >
+          <Text style={[styles.title, { color: colors.text.primary }]}>
+            Ajustes de Sensibilidade
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.text.secondary }]}>
             Varie as porcentagens para ver o impacto.
           </Text>
 
-          <ScrollView>
+          <ScrollView showsVerticalScrollIndicator={false}>
             <SliderItem
               label="Var. COE"
               value={vars.varCOE}
@@ -152,10 +217,19 @@ export function SliderModal({
 
           <View style={styles.actions}>
             <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-              <Text style={styles.cancelText}>Cancelar</Text>
+              <Text
+                style={[styles.cancelText, { color: colors.text.secondary }]}
+              >
+                Cancelar
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleApply} style={styles.applyButton}>
-              <Text style={styles.applyText}>Aplicar</Text>
+            <TouchableOpacity
+              onPress={handleApply}
+              style={[styles.applyButton, { backgroundColor: colors.primary }]}
+            >
+              <Text style={[styles.applyText, { color: colors.surface }]}>
+                Aplicar
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -171,21 +245,21 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   content: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
     padding: 24,
-    maxHeight: "80%",
+    maxHeight: "85%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 10,
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#1e293b",
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: "#64748b",
     marginBottom: 24,
   },
   sliderContainer: {
@@ -199,12 +273,22 @@ const styles = StyleSheet.create({
   sliderLabel: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#334155",
   },
   sliderValue: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#059669",
+  },
+  sliderControlRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   actions: {
     flexDirection: "row",
@@ -217,18 +301,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   cancelText: {
-    color: "#64748b",
     fontSize: 16,
     fontWeight: "600",
   },
   applyButton: {
-    backgroundColor: "#059669",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
   },
   applyText: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },

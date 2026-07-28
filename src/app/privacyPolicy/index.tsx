@@ -1,6 +1,6 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView, StyleSheet, Text, View, Platform } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Section = ({ title, text }: { title: string; text: string }) => {
   return (
@@ -12,9 +12,11 @@ const Section = ({ title, text }: { title: string; text: string }) => {
 };
 
 export default function PrivacyPolicyScreen() {
+  const insets = useSafeAreaInsets();
+
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 32) + 16 : 40 }]}>
         <Text style={styles.title}>
           Termos de Uso e Política de Privacidade
         </Text>
@@ -72,7 +74,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 40,
   },
   title: {
     fontSize: 20,

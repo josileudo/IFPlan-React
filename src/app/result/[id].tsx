@@ -7,6 +7,8 @@ import {
   Alert,
   StyleProp,
   ViewStyle,
+  TextStyle,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useStore } from "../../store/useStore";
@@ -15,7 +17,8 @@ import { calculateSimulation } from "../../utils/formulas";
 import { SimulationInput, SimulationOutput } from "../../types";
 import { SliderModal } from "../../components/SliderModal";
 import { MaterialIcons } from "@expo/vector-icons";
-import { theme } from "@/utils/theme";
+import { useTheme } from "@/utils/theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function ResultRow({
   label,
@@ -28,22 +31,31 @@ function ResultRow({
   value: number | null;
   unit?: string;
   digits?: number;
-  itemStyle?: StyleProp<ViewStyle>;
+  itemStyle?: StyleProp<TextStyle>;
 }) {
+  const { colors, typography } = useTheme();
   const displayValue =
     value !== null
       ? value.toLocaleString("pt-BR", {
-          minimumFractionDigits: digits || 2,
-          maximumFractionDigits: digits || 2,
+          minimumFractionDigits: digits ?? 2,
+          maximumFractionDigits: digits ?? 2,
         })
       : "-";
 
   return (
-    <View style={[styles.row]}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={[styles.value, itemStyle]}>
+    <View style={styles.row}>
+      <Text style={[styles.label, { color: colors.text.secondary }]}>
+        {label}
+      </Text>
+      <Text style={[styles.value, { color: colors.text.primary }, itemStyle]}>
         {displayValue}{" "}
-        {unit && <Text style={[styles.unit, itemStyle]}>{unit}</Text>}
+        {unit && (
+          <Text
+            style={[styles.unit, { color: colors.text.placeholder }, itemStyle]}
+          >
+            {unit}
+          </Text>
+        )}
       </Text>
     </View>
   );
@@ -58,11 +70,29 @@ function Section({
   children: React.ReactNode;
   icon: keyof typeof MaterialIcons.glyphMap;
 }) {
+  const { colors, spacing, borderRadius } = useTheme();
   return (
-    <View style={styles.section}>
+    <View
+      style={[
+        styles.section,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          padding: spacing.md,
+          borderRadius: borderRadius.lg,
+        },
+      ]}
+    >
       <View style={styles.sectionHeader}>
-        <MaterialIcons name={icon} size={22} color={theme.colors.primary} />
-        <Text style={styles.sectionTitle}>{title}</Text>
+        <MaterialIcons name={icon} size={22} color={colors.primary} />
+        <Text
+          style={[
+            styles.sectionTitle,
+            { color: colors.primary, borderBottomColor: colors.border },
+          ]}
+        >
+          {title}
+        </Text>
       </View>
       {children}
     </View>
@@ -73,10 +103,12 @@ export default function ResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { getSimulation, updateSimulation } = useStore();
+  const insets = useSafeAreaInsets();
+  const { colors, spacing } = useTheme();
 
   const originalSim = getSimulation(id!);
   const [currentInputs, setCurrentInputs] = useState<SimulationInput | null>(
-    null
+    null,
   );
   const [sliderVisible, setSliderVisible] = useState(false);
   const [oldResults, setOldResults] = useState<SimulationOutput | null>(null);
@@ -107,77 +139,105 @@ export default function ResultScreen() {
       if (!hasResultChanged) return {};
 
       return oldResults?.[item] < results?.[item]
-        ? styles.positiveChangeItem
-        : styles.negativeChangeItem;
+        ? { color: colors.success }
+        : { color: colors.error };
     },
-    [results, oldResults]
+    [results, oldResults, colors],
   );
 
   const handleSave = () => {
     if (currentInputs && id) {
       updateSimulation(id, currentInputs);
       Alert.alert("Sucesso", "Alterações salvas.");
-      router.back(); // Or stay? Prompt says "ao salvar volta para a tela de dashboard".
+      router.back();
     }
   };
 
   const handleEdit = () => {
-    router.push(`/simulation?id=${id}`);
+    router.replace(`/simulation?id=${id}`);
   };
 
   if (!results || !currentInputs) {
     return (
-      <View style={styles.container}>
-        <Text>Carregando...</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Text style={{ color: colors.text.primary, margin: spacing.lg }}>
+          Carregando...
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.content,
+          { padding: spacing.md, gap: spacing.lg },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* MARK: Resumo Produtivo */}
         <Section title="Resumo Produtivo" icon="bar-chart">
           <ResultRow
-            label="Produção Diária"
+            label="Produção diária"
             value={results.producaoDiaria}
             unit="L/dia"
+            digits={0}
             itemStyle={applyColorByItemChanged("producaoDiaria")}
           />
           <ResultRow
-            label="Produção Anual"
-            value={results.producaoDeLeiteHaAno}
-            unit="L/ha/ano"
-            itemStyle={applyColorByItemChanged("producaoDeLeiteHaAno")}
-          />
-          <ResultRow
-            label="Capacidade Suporte"
+            label="Capacidade suporte"
             value={results.capacidadeDeSuporte}
             unit="animais"
+            digits={1}
             itemStyle={applyColorByItemChanged("capacidadeDeSuporte")}
           />
           <ResultRow
-            label="Consumo Total"
-            value={results.consumoTotal}
-            unit="kg MS/dia"
-            itemStyle={applyColorByItemChanged("consumoTotal")}
+            label="Produção forragem"
+            value={results.producaoDeForragem}
+            unit="kg MV/m2"
+            digits={3}
+            itemStyle={applyColorByItemChanged("producaoDeForragem")}
+          />
+          <ResultRow
+            label="Produção de leite diária"
+            value={results.producaoDeLeiteHaDia}
+            unit="L/ha/dia"
+            digits={1}
+            itemStyle={applyColorByItemChanged("producaoDeLeiteHaDia")}
+          />
+          <ResultRow
+            label="Produção de leite anual"
+            value={results.producaoDeLeiteHaAno}
+            unit="L/ha/ano"
+            digits={0}
+            itemStyle={applyColorByItemChanged("producaoDeLeiteHaAno")}
+          />
+          <ResultRow
+            label="Taxa de lotação"
+            value={results.taxaDeLotacao}
+            unit="vacas/ha"
+            digits={1}
+            itemStyle={applyColorByItemChanged("taxaDeLotacao")}
+          />
+
+          <ResultRow
+            label="Tensão da água no solo"
+            value={results.tensaoDaAguaNoSolo}
+            unit="bar"
+            digits={3}
+            itemStyle={applyColorByItemChanged("tensaoDaAguaNoSolo")}
           />
         </Section>
 
         {/* MARK: Indicadores Financeiros */}
         <Section title="Indicadores Financeiros" icon="monetization-on">
           <ResultRow
-            label="Margem Líquida"
+            label="Margem líquida"
             value={results.ml}
             unit="R$/L"
             digits={3}
             itemStyle={applyColorByItemChanged("ml")}
-          />
-          <ResultRow
-            label="Lucro Anual (ML Anual)"
-            value={results.mlAnual}
-            unit="R$"
-            itemStyle={applyColorByItemChanged("mlAnual")}
           />
           <ResultRow
             label="Rentabilidade (TRCI)"
@@ -193,27 +253,44 @@ export default function ResultScreen() {
             itemStyle={applyColorByItemChanged("payback")}
           />
           <ResultRow
-            label="Investimento Total"
-            value={results.investimentoTotal}
-            unit="R$"
-            itemStyle={applyColorByItemChanged("investimentoTotal")}
-          />
-          <ResultRow
-            label="COE Total"
-            value={results.coeTotal}
-            unit="R$/ano"
-            itemStyle={applyColorByItemChanged("coeTotal")}
-          />
-          <ResultRow
             label="Preço do Leite"
             value={results.precoDoLeite}
             unit="R$/L"
+            digits={3}
             itemStyle={applyColorByItemChanged("precoDoLeite")}
+          />
+          <ResultRow
+            label="COE por litro"
+            value={results.coe}
+            unit="R$/L"
+            digits={3}
+            itemStyle={applyColorByItemChanged("coe")}
+          />
+          <ResultRow
+            label="COT por litro"
+            value={results.cot}
+            unit="R$/L"
+            digits={3}
+            itemStyle={applyColorByItemChanged("cot")}
+          />
+          <ResultRow
+            label="Receita por área"
+            value={results.receitaPorArea}
+            unit="R$/ha/ano"
+            digits={2}
+            itemStyle={applyColorByItemChanged("receitaPorArea")}
           />
         </Section>
 
         {/* MARK: Ambiente e Estresse */}
         <Section title="Ambiente e Estresse" icon="eco">
+          <ResultRow
+            label="DPL"
+            value={results.dpl}
+            unit="L/vaca/dia"
+            digits={1}
+            itemStyle={applyColorByItemChanged("dpl")}
+          />
           <ResultRow label="ITU" value={results.itu} digits={1} />
           <ResultRow
             label="Perda Receita (Estresse)"
@@ -225,6 +302,7 @@ export default function ResultScreen() {
             label="Pegada Hídrica"
             value={results.pegadaHidrica}
             unit="L H2O/L leite"
+            digits={1}
             itemStyle={applyColorByItemChanged("pegadaHidrica")}
           />
         </Section>
@@ -232,24 +310,58 @@ export default function ResultScreen() {
         <View style={{ height: 40 }} />
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View
+        style={[
+          styles.footer,
+          {
+            paddingBottom:
+              Platform.OS === "android"
+                ? Math.max(insets.bottom, 32) + 16
+                : Math.max(insets.bottom, 16),
+            backgroundColor: colors.surface,
+            borderTopColor: colors.border,
+          },
+        ]}
+      >
         {hasChanges ? (
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.footerButtonText}>Salvar Alterações</Text>
+          <TouchableOpacity
+            style={[styles.saveButton, { backgroundColor: colors.primary }]}
+            onPress={handleSave}
+          >
+            <Text style={[styles.footerButtonText, { color: colors.surface }]}>
+              Salvar Alterações
+            </Text>
           </TouchableOpacity>
         ) : (
           <>
             <TouchableOpacity
-              style={styles.secondaryButton}
+              style={[
+                styles.secondaryButton,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
               onPress={handleEdit}
             >
-              <Text style={styles.secondaryButtonText}>Editar</Text>
+              <Text
+                style={[
+                  styles.secondaryButtonText,
+                  { color: colors.text.primary },
+                ]}
+              >
+                Editar
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.primaryButton}
+              style={[
+                styles.primaryButton,
+                { backgroundColor: colors.primary },
+              ]}
               onPress={() => setSliderVisible(true)}
             >
-              <Text style={styles.footerButtonText}>Sensibilidade</Text>
+              <Text
+                style={[styles.footerButtonText, { color: colors.surface }]}
+              >
+                Sensibilidade
+              </Text>
             </TouchableOpacity>
           </>
         )}
@@ -268,7 +380,6 @@ export default function ResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
   },
   sectionHeader: {
     flexDirection: "row",
@@ -278,26 +389,15 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   content: {
-    padding: 24,
     paddingBottom: 100,
   },
   section: {
-    marginBottom: 24,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#059669",
     borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
   },
   row: {
     flexDirection: "row",
@@ -306,17 +406,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: "#64748b",
     flex: 1,
   },
   value: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1e293b",
   },
   unit: {
     fontSize: 12,
-    color: "#94a3b8",
     fontWeight: "400",
   },
   footer: {
@@ -324,51 +421,36 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
     flexDirection: "row",
     gap: 16,
-    paddingBottom: 32,
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: "#059669",
-    paddingVertical: 14, // Reduced padding
+    paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },
   secondaryButton: {
     flex: 1,
-    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: "#cbd5e1",
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },
   saveButton: {
     flex: 1,
-    backgroundColor: "#059669",
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },
   footerButtonText: {
-    color: "#fff",
     fontWeight: "700",
     fontSize: 16,
   },
   secondaryButtonText: {
-    color: "#334155",
     fontWeight: "600",
     fontSize: 16,
-  },
-  positiveChangeItem: {
-    color: "#059669",
-  },
-  negativeChangeItem: {
-    color: "#dc2626",
   },
 });
