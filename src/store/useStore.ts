@@ -2,10 +2,10 @@ import { create } from "zustand";
 import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
 import { Simulation, SimulationInput, SimulationOutput } from "../types";
 import { calculateSimulation } from "../utils/formulas";
-import { createMMKV, MMKV } from "react-native-mmkv";
+import { MMKV } from "react-native-mmkv";
 
 // Create MMKV instance
-const storage = createMMKV({
+const storage = new MMKV({
   id: "ifplan-storage",
   encryptionKey: "your-encryption-key-here", // Optional: Add encryption for better security
 });
@@ -13,7 +13,7 @@ const storage = createMMKV({
 const zustandStorage: StateStorage = {
   setItem: (name, value) => storage.set(name, value),
   getItem: (name) => storage.getString(name) ?? null,
-  removeItem: (name) => storage.remove(name),
+  removeItem: (name) => storage.delete(name),
 };
 
 interface StoreState {
